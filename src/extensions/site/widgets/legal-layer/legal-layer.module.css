@@ -1,0 +1,90 @@
+/* Container של כל המסמך */
+.container {
+  direction: rtl;
+  font-family: "Arial", sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  padding: 24px;
+  background: #ffffff;
+   background: #f26c6c; /* צבע רקע זמני – רואים אם ה-div קיים */
+  min-height: 100px; /* גובה מינימום כדי לבדוק אם ה-container נטען */
+  border: 1px solid #ccc; /* optional – מסגרת לבדיקה */
+}
+
+/* כותרת ראשית */
+.title {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #2a2a2a;
+}
+
+/* תת‑כותרת */
+.subtitle {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+/* תאריך */
+.date {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 16px;
+}
+
+/* סעיף ראשי */
+.section {
+  margin-top: 24px;
+  border-top: 1px solid #eee;
+  padding-top: 18px;
+}
+
+/* כותרת של סעיף */
+.sectionTitle {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+/* פסקה */
+.paragraph {
+  margin-bottom: 12px;
+}
+
+/* כותרת משנה בתוך תוכן */
+.heading {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 12px;
+  margin-bottom: 6px;
+}
+
+/* רשימה נקודות */
+.bulletList {
+  margin: 12px 0;
+  padding-right: 16px;
+  list-style-type: disc;
+}
+
+/* טבלה בסיסית */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  margin-bottom: 16px;
+}
+
+.table th,
+.table td {
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.table th {
+  background: #f5f5f5;
+  font-weight: 600;
+}

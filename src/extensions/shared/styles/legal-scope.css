@@ -1,0 +1,419 @@
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap');
+
+/* ============ Root Scope ============ */
+.legal-scope {
+  background-color: #ffffff;
+  font-family: 'Assistant', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  width: 100%;
+}
+
+.legal-scope * {
+  font-family: 'Assistant', sans-serif;
+}
+
+/* ============ Document Container ============ */
+.legal-scope .documentContainer {
+  width: 100%;
+}
+
+/* ============ Document Header ============ */
+.legal-scope .docHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.legal-scope .docTitle {
+  font-family: 'Assistant', sans-serif;
+  font-size: 29px;
+  font-weight: 700;
+  color: #272726;
+  margin-bottom: 0.5rem;
+}
+
+.legal-scope .docSubtitle {
+  font-family: 'Assistant', sans-serif;
+  font-size: 19.2px;
+  color: #272726;
+  line-height: 1.5;
+  max-width: 48rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.legal-scope .docDate {
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.75rem;
+}
+
+/* ============ Preamble ============ */
+.legal-scope .preamble {
+  margin-bottom: 1.5rem;
+}
+
+/* ============ Section ============ */
+.legal-scope .sectionWrapper {
+  margin-bottom: 0.25rem;
+}
+
+.legal-scope .sectionButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  text-align: right;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.legal-scope .sectionToggleGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legal-scope .sectionCircle {
+  height: 1rem;
+  width: 1rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  background-color: #d1d5db;
+}
+
+.legal-scope .sectionCircleOpen {
+  background-color: #029BE5;
+}
+
+.legal-scope .sectionCircleIcon {
+  height: 0.625rem;
+  width: 0.625rem;
+  color: white;
+}
+
+.legal-scope .sectionNumber {
+  font-family: 'Assistant', sans-serif;
+  font-weight: 600;
+  color: #272726;
+  font-size: 19.2px;
+}
+
+.legal-scope .sectionTitle {
+  font-family: 'Assistant', sans-serif;
+  font-weight: 600;
+  color: #272726;
+  font-size: 19.2px;
+}
+
+.legal-scope .sectionContentWrapper {
+  overflow: hidden;
+}
+
+.legal-scope .sectionContent {
+  padding-right: 2rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ============ SubSection ============ */
+.legal-scope .subSectionWrapper {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.legal-scope .subSectionWrapperIndented {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  margin-right: 1rem;
+}
+
+.legal-scope .subSectionButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+  text-align: right;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.legal-scope .subSectionCircle {
+  height: 1rem;
+  width: 1rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  background-color: #d1d5db;
+}
+
+.legal-scope .subSectionCircleOpen {
+  background-color: #029BE5;
+}
+
+.legal-scope .subSectionCircleIcon {
+  height: 0.625rem;
+  width: 0.625rem;
+  color: white;
+}
+
+.legal-scope .subSectionNumbering {
+  font-family: 'Assistant', sans-serif;
+  font-weight: 500;
+  color: #272726;
+  font-size: 19.2px;
+}
+
+.legal-scope .subSectionTitle {
+  font-family: 'Assistant', sans-serif;
+  font-weight: 500;
+  color: #272726;
+  font-size: 19.2px;
+}
+
+.legal-scope .subSectionContentWrapper {
+  overflow: hidden;
+}
+
+.legal-scope .subSectionContent {
+  padding-right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* ============ NumberedSubSection Item ============ */
+.legal-scope .numberedItemWrapper {
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.legal-scope .numberedItemToggleGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ============ Content Blocks ============ */
+.legal-scope .paragraph {
+  font-family: 'Assistant', sans-serif;
+  font-size: 19.2px;
+  color: #272726;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.legal-scope .paragraph a {
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.legal-scope .paragraph a:hover {
+  color: #1e40af;
+}
+
+.legal-scope .heading {
+  font-family: 'Assistant', sans-serif;
+  font-size: 19.2px;
+  font-weight: 700;
+  color: #272726;
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.legal-scope .contentBlockWrapper {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ============ Bullet List ============ */
+.legal-scope .bulletListDisc {
+  list-style-type: disc;
+  margin-right: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.legal-scope .bulletListCircle {
+  list-style-type: circle;
+  margin-right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.legal-scope .bulletListSquare {
+  list-style-type: square;
+  margin-right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.legal-scope .bulletItem {
+  font-family: 'Assistant', sans-serif;
+  line-height: 1.5;
+  color: #272726;
+  font-size: 19.2px;
+}
+
+.legal-scope .bulletItem a {
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.legal-scope .bulletItem a:hover {
+  color: #1e40af;
+}
+
+/* ============ Numbered List ============ */
+.legal-scope .numberedList {
+  list-style: none;
+  margin-right: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+}
+
+.legal-scope .numberedListIndented {
+  list-style: none;
+  margin-right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+}
+
+.legal-scope .numberedItem {
+  font-family: 'Assistant', sans-serif;
+  line-height: 1.5;
+  color: #272726;
+  font-size: 19.2px;
+}
+
+.legal-scope .numberedItem a {
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.legal-scope .numberedItem a:hover {
+  color: #1e40af;
+}
+
+.legal-scope .numberedItemRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.legal-scope .numberedItemPrefix {
+  font-family: 'Assistant', sans-serif;
+  font-weight: 500;
+  color: #272726;
+  flex-shrink: 0;
+}
+
+.legal-scope .numberedItemBody {
+  flex: 1;
+}
+
+.legal-scope .numberedItemSubList {
+  margin-top: 0.5rem;
+}
+
+/* ============ Table ============ */
+.legal-scope .tableWrapper {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  direction: rtl;
+}
+
+.legal-scope .table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #d1d5db;
+  font-size: 19.2px;
+  font-family: 'Assistant', sans-serif;
+  direction: rtl;
+}
+
+.legal-scope .tableHeaderRow {
+  background-color: #ffffff;
+}
+
+.legal-scope .tableHeader {
+  border: 1px solid #d1d5db;
+  padding: 0.75rem 1rem;
+  text-align: right;
+  font-weight: 400;
+  color: #272726;
+}
+
+.legal-scope .tableRow:hover {
+  background-color: rgba(249, 250, 251, 0.5);
+}
+
+.legal-scope .tableCell {
+  border: 1px solid #d1d5db;
+  padding: 0.75rem 1rem;
+  text-align: right;
+  vertical-align: top;
+  color: #272726;
+  white-space: pre-wrap;
+}
+
+.legal-scope .tableCell a {
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ============ Footer ============ */
+.legal-scope .footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.legal-scope .footerText {
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+@media (max-width: 999px) {
+  .legal-scope .sectionWrapper {
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .legal-scope .numberedItemWrapper {
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .legal-scope .contentBlockWrapper > div:last-child .numberedItemWrapper {
+    border-bottom: none;
+  }
+}

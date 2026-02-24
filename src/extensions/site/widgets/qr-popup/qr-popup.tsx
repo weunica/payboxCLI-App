@@ -100,7 +100,9 @@ class MyElement extends HTMLElement {
 
     this.shadowRoot.innerHTML = `
     <style>
-      :host { display: flex; justify-content: flex-start; width: 100%; direction: rtl; box-sizing: border-box; }
+      @font-face { font-family: 'Assistant'; font-style: normal; font-weight: 100 900; src: url('https://fonts.gstatic.com/s/assistant/v20/2sDcZGJYnIjSi6H75xkZZE1I0yCmYzzQtmZnEGOf.woff2') format('woff2'); unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F; }
+      @font-face { font-family: 'Assistant'; font-style: normal; font-weight: 100 900; src: url('https://fonts.gstatic.com/s/assistant/v20/2sDcZGJYnIjSi6H75xkZZE1I0yCmYzzQtmZnEA-f.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      :host { display: flex; justify-content: flex-start; width: 100%; direction: rtl; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
       @media (max-width: 1000px) { :host { justify-content: center; } }
 
       .cta-button {
@@ -109,7 +111,7 @@ class MyElement extends HTMLElement {
         border: 1.5px solid ${borderColor};
         padding: 8px 30px; border-radius: 50px;
          cursor: pointer;
-        font-family: Assistant, sans-serif; 
+        font-family: 'Assistant', sans-serif;
         font-size: 18px; font-weight: 600;
         display: inline-flex; align-items: center; justify-content: center;
         gap: 10px; transition: all 0.2s; direction: rtl;
@@ -124,7 +126,7 @@ class MyElement extends HTMLElement {
       .modal-overlay.active { display: flex; opacity: 1; }
       .modal-content { 
         background: white; padding: 60px; border-radius: 24px; position: relative; width: 665px; 
-        max-width: 90%; direction: rtl; font-family: Assistant, sans-serif; 
+        max-width: 90%; direction: rtl; font-family: 'Assistant', sans-serif;
       }
       .close-btn { position: absolute; top: 20px; left: 20px; cursor: pointer; border: none; background: none; font-size: 24px; }
       .flex-container { display: flex; align-items: center; gap: 40px; }
@@ -146,10 +148,10 @@ class MyElement extends HTMLElement {
         object-fit: contain; 
         image-rendering: pixelated;
       }
-      h2 { margin: 0 0 10px 0; font-size: 32px; color: #272726; font-weight: bold; }
+      h2 { margin: 0 0 10px 0; font-size: 32px; color: #272726; font-weight: 800; }
       .sub-text { color: #272726; font-size: 24px; margin-bottom: 20px; font-weight: 600; }
       .steps { list-style: none; padding: 0; margin: 0; }
-      .steps li { font-size: 24px;font-weight: 400; margin-bottom: 12px; display: flex; gap: 12px; align-items: center; color: #272726; }
+      .steps li { font-size: 24px; font-weight: 400; margin-bottom: 12px; display: flex; gap: 12px; align-items: center; color: #272726; }
       .step-num { color: #009FF3; font-weight: 700; font-size: 36px; min-width: 30px; }
     </style>
 

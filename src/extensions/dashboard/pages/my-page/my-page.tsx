@@ -1,21 +1,19 @@
 import type { FC } from 'react';
-import { EmptyState, Page, WixDesignSystemProvider } from '@wix/design-system';
+import { Page, WixDesignSystemProvider } from '@wix/design-system';
 import '@wix/design-system/styles.global.css';
+import LegalAgreementRoot from '../../../shared/components/LegalAgreementRoot';
+import { DEFAULT_DOCUMENT } from '../../../shared/constants/defaultDocument';
 
 const DashboardPage: FC = () => {
   return (
     <WixDesignSystemProvider features={{ newColorsBranding: true }}>
       <Page>
         <Page.Header
-          title="My Page"
-          subtitle="This is a subtitle for your page"
+          title="Paybox General Terms of Use"
+          subtitle="Editing the legal agreement and terms of use for the PayBox application"
         />
         <Page.Content>
-          <EmptyState
-            title="My Page"
-            subtitle="Edit src/extensions/my-page/page.tsx to change this text."
-            skin="page"
-          />
+          <LegalAgreementRoot readOnly={false} defaultDocument={DEFAULT_DOCUMENT} />
         </Page.Content>
       </Page>
     </WixDesignSystemProvider>

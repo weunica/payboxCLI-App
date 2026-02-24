@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@source "../components/**/*.jsx";
+@source "../components/**/*.tsx";
+@source "../../dashboard/**/*.tsx";
+@source "../../site/**/*.tsx";
 
 @layer base {
   :root,

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { Button as WdsButton } from "@wix/design-system";
+import "@wix/design-system/styles.global.css";
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Pencil, Save, X, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import LegalSection from "./LegalSection";
 import LegalContentBlock from "./LegalContentBlock";
 
@@ -88,20 +89,17 @@ export default function LegalDocumentView({ document, onSave }) {
               <div className="flex gap-2">
                 {isEditing ? (
                   <>
-                    <Button variant="outline" size="sm" onClick={cancelEditing}>
-                      <X className="h-4 w-4 ml-1" />
+                    <WdsButton skin="light" size="small" onClick={cancelEditing}>
                       ביטול
-                    </Button>
-                    <Button size="sm" onClick={saveChanges} className="bg-emerald-600 hover:bg-emerald-700">
-                      <Save className="h-4 w-4 ml-1" />
+                    </WdsButton>
+                    <WdsButton skin="success" size="small" onClick={saveChanges}>
                       שמור
-                    </Button>
+                    </WdsButton>
                   </>
                 ) : (
-                  <Button size="sm" onClick={startEditing} variant="outline">
-                    <Pencil className="h-4 w-4 ml-1" />
+                  <WdsButton size="small" onClick={startEditing}>
                     עריכת תוכן
-                  </Button>
+                  </WdsButton>
                 )}
               </div>
             </div>

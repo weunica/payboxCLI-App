@@ -6,6 +6,8 @@ export interface ListItem {
   title: string;
   description?: string;
   children?: ListItem[];
+  /** For text-block: 'small' (16px) or 'normal' (19.2px) */
+  textSize?: 'small' | 'normal';
 }
 
 export interface NestedListRecord {

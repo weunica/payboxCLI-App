@@ -221,6 +221,33 @@ const NestedListEditor: React.FC<Props> = ({
                   <option value="text-block">טקסט</option>
                   <option value="heading-block">כותרת</option>
                 </select>
+                {/* Text size selector for text-block */}
+                {item.type === 'text-block' && (
+                  <select
+                    value={item.textSize || 'small'}
+                    dir="rtl"
+                    onChange={e => {
+                      const textSize = e.target.value as 'small' | 'normal';
+                      onChange(items.map((it, i) => i === index ? { ...it, textSize } : it));
+                    }}
+                    style={{
+                      fontSize: '11px',
+                      height: '28px',
+                      padding: '0 4px',
+                      borderRadius: '4px',
+                      border: '1px solid #C1C2C3',
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                      alignSelf: 'flex-start',
+                      marginRight: '8px',
+                      background: '#F5F6F7',
+                      color: '#32536A',
+                    }}
+                  >
+                    <option value="small">טקסט קטן (16px)</option>
+                    <option value="normal">טקסט רגיל (19.2px)</option>
+                  </select>
+                )}
                 {/* Number badge */}
                 <div style={{ minWidth: '40px', flexShrink: 0 }}>
                   {numberLabel && (

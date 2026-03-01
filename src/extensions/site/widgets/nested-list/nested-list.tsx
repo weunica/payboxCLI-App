@@ -78,7 +78,7 @@ const NestedItem: FC<NestedItemProps> = ({ item, numbering, depth }) => {
   const blockChildren = children.filter(child => child.type && child.type !== 'item');
 
   return (
-    <div style={{ padding: isRoot ? '10px 0' : '0' }}>
+    <li style={{ listStyle: 'none', padding: isRoot ? '10px 0' : '0' }}>
       <div
         style={{
           display: 'flex',
@@ -147,24 +147,24 @@ const NestedItem: FC<NestedItemProps> = ({ item, numbering, depth }) => {
         </div>
       )}
       {children.length > 0 && (
-        <div style={{ paddingRight: '24px', marginTop: isRoot ? '16px' : '2px' }}>
+        <ol style={{ paddingRight: '24px', marginTop: isRoot ? '16px' : '2px' }}>
           {children.map((child) => {
             if (!child.type || child.type === 'item') {
               childCounter++;
               return (
-            <NestedItem
-              key={child.id}
-              item={child}
+                <NestedItem
+                  key={child.id}
+                  item={child}
                   numbering={`${numbering}.${childCounter}`}
-              depth={depth + 1}
-            />
+                  depth={depth + 1}
+                />
               );
             }
             return <BlockItem key={child.id} item={child} depth={depth + 1} />;
           })}
-        </div>
+        </ol>
       )}
-    </div>
+    </li>
   );
 };
 
@@ -214,20 +214,22 @@ const NestedListComponent: FC<WidgetProps> = ({ pageName }) => {
       WebkitFontSmoothing: 'antialiased',
       MozOsxFontSmoothing: 'grayscale',
     }}>
-      {listItems.map((item) => {
-            if (!item.type || item.type === 'item') {
-          rootCounter++;
-              return (
-                <NestedItem
-                  key={item.id}
-                  item={item}
-              numbering={`${rootCounter}`}
-                  depth={0}
-                />
-              );
-            }
-            return <BlockItem key={item.id} item={item} depth={0} />;
-          })}
+      <ol style={{ padding: 0, margin: 0 }}>
+        {listItems.map((item) => {
+          if (!item.type || item.type === 'item') {
+            rootCounter++;
+            return (
+              <NestedItem
+                key={item.id}
+                item={item}
+                numbering={`${rootCounter}`}
+                depth={0}
+              />
+            );
+          }
+          return <BlockItem key={item.id} item={item} depth={0} />;
+        })}
+      </ol>
     </div>
   );
 };

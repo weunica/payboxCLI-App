@@ -21,10 +21,10 @@ const Panel: FC = () => {
   useEffect(() => {
     const loadData = async () => {
       const props = [
-        'display-name', 'modal-title', 'modal-subtitle', 
-        'step-1', 'step-2', 'step-3', 
-        'btn-bg-color', 'btn-border-color', 'btn-text-color', 
-        'show-arrow', 'deeplink-value'
+        'display-name', 'modal-title', 'modal-subtitle',
+        'step-1', 'step-2', 'step-3',
+        'btn-bg-color', 'btn-border-color', 'btn-text-color',
+        'show-arrow', 'deeplink-value', 'aria-label-text'
       ];
       const data: any = {};
       for (const prop of props) {
@@ -35,24 +35,29 @@ const Panel: FC = () => {
     loadData();
   }, []);
 
+  // const updateProp = (key: string, val: any) => {
+  //   setValues((prev: any) => ({ ...prev, [key]: val }));
+  //   widget.setProp(key, val);
+  // };
   const updateProp = (key: string, val: any) => {
-    setValues((prev: any) => ({ ...prev, [key]: val }));
-    widget.setProp(key, val);
-  };
+  const safeVal = val ?? ''; // מבטיח שלא יישלח null/undefined
+  setValues((prev: any) => ({ ...prev, [key]: safeVal }));
+  widget.setProp(key, safeVal);
+};
 
   const openColorPicker = (key: string) => {
     inputs.selectColor(values[key] || 'transparent', {
       onChange: (value) => updateProp(key, value ?? 'transparent'),
     });
   };
-return (
+  return (
     <WixDesignSystemProvider>
       <SidePanel width="300">
         <SidePanel.Content>
           <Box padding="medium">
             <Layout gap="18px">
               <Cell><Text weight="bold">עיצוב כפתור</Text></Cell>
-              
+
               <Cell>
                 <FormField label="טקסט כפתור">
                   <Input value={values['display-name']} onChange={e => updateProp('display-name', e.target.value)} />
@@ -85,9 +90,9 @@ return (
               <Cell>
                 <Box align="space-between" verticalAlign="middle">
                   <Text size="small">הצג חץ (&gt;)</Text>
-                  <ToggleSwitch 
-                    checked={values['show-arrow'] === 'true' || values['show-arrow'] === true} 
-                    onChange={e => updateProp('show-arrow', e.target.checked.toString())} 
+                  <ToggleSwitch
+                    checked={values['show-arrow'] === 'true' || values['show-arrow'] === true}
+                    onChange={e => updateProp('show-arrow', e.target.checked.toString())}
                   />
                 </Box>
               </Cell>
@@ -100,9 +105,18 @@ return (
               <Cell><FormField label="שלב 1"><Input value={values['step-1']} onChange={e => updateProp('step-1', e.target.value)} /></FormField></Cell>
               <Cell><FormField label="שלב 2"><Input value={values['step-2']} onChange={e => updateProp('step-2', e.target.value)} /></FormField></Cell>
               <Cell><FormField label="שלב 3"><Input value={values['step-3']} onChange={e => updateProp('step-3', e.target.value)} /></FormField></Cell>
-              
+
               <Divider />
               <Cell><FormField label="Deep Link Value"><Input value={values['deeplink-value']} onChange={e => updateProp('deeplink-value', e.target.value)} /></FormField></Cell>
+              <Cell>
+                <FormField label="תיאור נגישות (aria-label)">
+                  <Input
+                    placeholder="לדוגמה: להצטרפות חינם לפייבוקס פלוס"
+                    value={values['aria-label-text']}
+                    onChange={e => updateProp('aria-label-text', e.target.value)}
+                  />
+                </FormField>
+              </Cell>
             </Layout>
           </Box>
         </SidePanel.Content>

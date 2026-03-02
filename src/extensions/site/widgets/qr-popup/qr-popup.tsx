@@ -23,19 +23,19 @@ const initAppsFlyerEngine = () => {
       url += "&is_retargeting=False&af_ss_ui=true&af_ss_gtm_ui=true&af_ss_qr=true";
       return { clickURL: url };
     },
-   displayQrCode: function (container, options) {
-  if (container) {
-    // הוספת margin=1 עוזרת לסורקים לקרוא את הקוד טוב יותר
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${options.width}x${options.height}&data=${encodeURIComponent(options.text)}&margin=1`;
-    container.innerHTML = `<img src="${qrUrl}" alt="QR Code" />`;
-  }
-}
+    displayQrCode: function (container, options) {
+      if (container) {
+        // הוספת margin=1 עוזרת לסורקים לקרוא את הקוד טוב יותר
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${options.width}x${options.height}&data=${encodeURIComponent(options.text)}&margin=1`;
+        container.innerHTML = `<img src="${qrUrl}" alt="QR Code" />`;
+      }
+    }
   };
 }
 
 class MyElement extends HTMLElement {
   static get observedAttributes() {
-    return ['display-name', 'modal-title', 'modal-subtitle', 'step-1', 'step-2', 'step-3', 'deeplink-value', 'btn-bg-color', 'btn-border-color', 'btn-text-color', 'show-arrow'];
+    return ['display-name', 'modal-title', 'modal-subtitle', 'step-1', 'step-2', 'step-3', 'deeplink-value', 'aria-label-text', 'btn-bg-color', 'btn-border-color', 'btn-text-color', 'show-arrow'];
   }
 
   constructor() {
@@ -48,11 +48,11 @@ class MyElement extends HTMLElement {
   attributeChangedCallback() { this.render(); }
 
   isMobileOrTablet() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   }
 
- handleButtonClick(e) {
+  handleButtonClick(e) {
     if (e) e.preventDefault(); // מניעת התנהגות דיפולטיבית
 
     const result = window.AF_SMART_SCRIPT.generateOneLinkURL({
@@ -69,20 +69,34 @@ class MyElement extends HTMLElement {
     }
   }
 
-  openModal(clickURL) {
-    const modal = this.shadowRoot?.querySelector('.modal-overlay');
-    if (modal) {
-      modal.style.display = 'flex';
-      setTimeout(() => modal.classList.add('active'), 10);
-      this.generateQRCode(clickURL);
-    }
-  }
+ openModal(clickURL) {
+  const modal = this.shadowRoot?.querySelector('.modal-overlay');
+  this._lastFocusedElement = this.shadowRoot.activeElement || document.activeElement; // שמירת האלמנט הנוכחי
 
-  closeModal() {
-    const modal = this.shadowRoot?.querySelector('.modal-overlay');
-    modal?.classList.remove('active');
-    setTimeout(() => { modal.style.display = 'none'; }, 300);
+  if (modal) {
+    modal.style.display = 'flex';
+    setTimeout(() => {
+      modal.classList.add('active');
+      // מעבר פוקוס מיידי לכפתור הסגירה
+      const closeBtn = this.shadowRoot.getElementById('close-modal');
+      closeBtn?.focus();
+    }, 10);
+    this.generateQRCode(clickURL);
   }
+}
+
+closeModal() {
+  const modal = this.shadowRoot?.querySelector('.modal-overlay');
+  modal?.classList.remove('active');
+  
+  setTimeout(() => { 
+    modal.style.display = 'none'; 
+    // החזרת הפוקוס לכפתור שפתח את המודאל
+    if (this._lastFocusedElement) {
+      this._lastFocusedElement.focus();
+    }
+  }, 300);
+}
 
   generateQRCode(clickURL) {
     const qrContainer = this.shadowRoot?.getElementById('qr-container');
@@ -97,6 +111,7 @@ class MyElement extends HTMLElement {
     const borderColor = this.getAttribute('btn-border-color') || '#ffffff';
     const textColor = this.getAttribute('btn-text-color') || '#ffffff';
     const showArrow = this.getAttribute('show-arrow') !== 'false';
+    const ariaLabel = this.getAttribute('aria-label-text') || displayName;
 
     this.shadowRoot.innerHTML = `
     <style>
@@ -155,18 +170,21 @@ class MyElement extends HTMLElement {
       .step-num { color: #009FF3; font-weight: 700; font-size: 36px; min-width: 30px; }
     </style>
 
-    <button class="cta-button">
+    <button class="cta-button" aria-label="${ariaLabel}" aria-haspopup="true">
       <span>${displayName}</span>
-      <span class="arrow">></span>
+      <span class="arrow" aria-hidden="true">></span>
     </button>
 
-    <div class="modal-overlay">
+    <div class="modal-overlay" 
+      role="dialog" 
+      aria-modal="true" 
+      aria-labelledby="modal-title-id">
         <div class="modal-content">
-          <button class="close-btn" id="close-modal">✕</button>
+          <button class="close-btn" id="close-modal" aria-label="סגור חלון">✕</button>
           <div class="flex-container">
             <div class="text-side">
-              <h2>${this.getAttribute('modal-title') || ''}</h2>
-              <p class="sub-text">${this.getAttribute('modal-subtitle') || ''}</p>
+              <h2 id="modal-title-id">${this.getAttribute('modal-title') || ''}</h2>
+              <h3 class="sub-text">${this.getAttribute('modal-subtitle') || ''}</h3>
               <ul class="steps">
                 <li><span class="step-num">1</span> ${this.getAttribute('step-1') || ''}</li>
                 <li><span class="step-num">2</span> ${this.getAttribute('step-2') || ''}</li>
@@ -179,8 +197,30 @@ class MyElement extends HTMLElement {
       </div>
     `;
 
-    this.shadowRoot.querySelector('.cta-button').addEventListener('click', () => this.handleButtonClick());
-    this.shadowRoot.querySelector('#close-modal')?.addEventListener('click', () => this.closeModal());
+    // this.shadowRoot.querySelector('.cta-button').addEventListener('click', () => this.handleButtonClick());
+    // this.shadowRoot.querySelector('#close-modal')?.addEventListener('click', () => this.closeModal());
+    const closeBtn = this.shadowRoot.querySelector('#close-modal');
+  const modalOverlay = this.shadowRoot.querySelector('.modal-overlay');
+
+  // ניהול נעילת פוקוס (Focus Trap)
+  modalOverlay.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      // כיוון שבמודאל הזה יש כרגע רק אלמנט אחד לחיץ (ה-X),
+      // כל לחיצה על Tab או Shift+Tab פשוט תשאיר את הפוקוס עליו.
+      e.preventDefault();
+      closeBtn.focus();
+    }
+  });
+
+  // סגירה ב-Escape (בונוס נגישות חשוב)
+  modalOverlay.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      this.closeModal();
+    }
+  });
+
+  this.shadowRoot.querySelector('.cta-button').addEventListener('click', () => this.handleButtonClick());
+  closeBtn?.addEventListener('click', () => this.closeModal());
   }
 }
 export default MyElement;

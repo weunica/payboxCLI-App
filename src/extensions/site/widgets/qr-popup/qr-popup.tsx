@@ -170,7 +170,7 @@ closeModal() {
       .step-num { color: #009FF3; font-weight: 700; font-size: 36px; min-width: 30px; }
     </style>
 
-    <button class="cta-button" aria-label="${ariaLabel}" aria-haspopup="true">
+    <button class="cta-button" aria-label="${ariaLabel}" aria-haspopup="dialog">
       <span>${displayName}</span>
       <span class="arrow" aria-hidden="true">></span>
     </button>

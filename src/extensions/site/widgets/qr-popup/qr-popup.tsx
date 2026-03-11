@@ -136,12 +136,13 @@ closeModal() {
       .modal-overlay { 
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0, 30, 60, 0.7); z-index: 10000; justify-content: center; align-items: center;
-        opacity: 0; transition: opacity 0.3s;
+        opacity: 0; transition: opacity 0.3s;padding: 40px 20px; 
+        box-sizing: border-box;
       }
       .modal-overlay.active { display: flex; opacity: 1; }
       .modal-content { 
-        background: white; padding: 60px; border-radius: 24px; position: relative; width: 665px; 
-        max-width: 90%; direction: rtl; font-family: 'Assistant', sans-serif;
+        background: white; padding: 40px; border-radius: 24px; position: relative; width: 665px; 
+        max-width: 100%;max-height: 90vh; direction: rtl; font-family: 'Assistant', sans-serif;overflow-y: auto;
       }
       .close-btn { position: absolute; top: 20px; left: 20px; cursor: pointer; border: none; background: none; font-size: 24px; }
       .flex-container { display: flex; align-items: center; gap: 40px; }

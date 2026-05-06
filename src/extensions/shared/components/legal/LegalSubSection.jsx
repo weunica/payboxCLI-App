@@ -25,13 +25,23 @@ export default function LegalSubSection({ subSection, isEditing, onChange, depth
 
   useEffect(() => {
     const handleInternalLink = (e) => {
-      const target = e.target;
-      if (target.tagName === 'A' && target.dataset.internalLink) {
-        const anchorId = target.dataset.internalLink;
-        
+      // find the closest anchor in case click landed on inner node
+      const anchor = e.target && e.target.closest ? e.target.closest('a') : null;
+      if (anchor && anchor.dataset && anchor.dataset.internalLink) {
+        const anchorId = anchor.dataset.internalLink;
         if (anchorId === subSectionId) {
           e.preventDefault();
           setIsOpen(true);
+          // after opening, move programmatic focus into the content region for screen-reader users
+          setTimeout(() => {
+            const contentEl = document.getElementById(`${subSectionId}-content`);
+            if (contentEl) {
+              try {
+                contentEl.setAttribute('tabindex', '-1');
+                contentEl.focus();
+              } catch (err) {}
+            }
+          }, 250);
         }
       }
     };
@@ -42,6 +52,16 @@ export default function LegalSubSection({ subSection, isEditing, onChange, depth
       // Check if this subsection or any nested subsection matches
       if (anchorId === subSectionId || anchorId.startsWith(subSectionId + '-')) {
         setIsOpen(true);
+        // focus the content region after opening so screen readers move to it
+        setTimeout(() => {
+          const contentEl = document.getElementById(`${subSectionId}-content`);
+          if (contentEl) {
+            try {
+              contentEl.setAttribute('tabindex', '-1');
+              contentEl.focus();
+            } catch (err) {}
+          }
+        }, 250);
       }
     };
 

@@ -80,10 +80,11 @@ export default function LegalSection({ section, isEditing, onChange, sectionInde
 
   React.useEffect(() => {
     const handleInternalLink = (e) => {
-      const target = e.target;
-      if (target.tagName === 'A' && target.dataset.internalLink) {
+      // find the closest anchor in case the user clicked an inner element
+      const anchor = e.target && e.target.closest ? e.target.closest('a') : null;
+      if (anchor && anchor.dataset && anchor.dataset.internalLink) {
         e.preventDefault();
-        const anchorId = target.dataset.internalLink;
+        const anchorId = anchor.dataset.internalLink;
         
         // Check if this section or any subsection matches
         if (anchorId === sectionId || anchorId.startsWith(`subsection-${sectionNumber}-`)) {
@@ -94,14 +95,26 @@ export default function LegalSection({ section, isEditing, onChange, sectionInde
             // If it's a subsection, trigger its opening too
             const element = document.getElementById(anchorId);
             if (element) {
-              // Trigger a custom event to open nested subsections
-              const openEvent = new CustomEvent('openSubSection', { detail: { anchorId } });
-              document.dispatchEvent(openEvent);
-              
+                // Trigger a custom event to open nested subsections
+                const openEvent = new CustomEvent('openSubSection', { detail: { anchorId } });
+                document.dispatchEvent(openEvent);
               // Scroll after giving time for all sections to open
-              setTimeout(() => {
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }, 150);
+                  setTimeout(() => {
+                    // prefer focusing the content region (has tabindex=-1) so screen readers land there
+                    const contentEl = document.getElementById(`${anchorId}-content`);
+                    if (contentEl) {
+                      try {
+                        // ensure tabindex is present so programmatic focus is allowed
+                        contentEl.setAttribute('tabindex', '-1');
+                        contentEl.focus();
+                      } catch (err) {}
+                      // ensure it is visible
+                      contentEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      // log active element and whether focus moved (kept out of production logs)
+                    } else {
+                      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                  }, 150);
             }
           }, 100);
         }

@@ -38,6 +38,8 @@ const LegalAgreementRoot: React.FC<Props> = ({
     fetchData();
   }, []);
 
+  // debug overlay removed
+
   const handleSave = async (updatedData: LegalDocument) => {
     if (readOnly) return;
 

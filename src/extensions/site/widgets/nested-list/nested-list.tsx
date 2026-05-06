@@ -14,13 +14,49 @@ interface ListItem {
   textSize?: 'small' | 'normal';
 }
 
+let _nestedLinkDescCounter = 0;
+
 const parseTitle = (text: string): string => {
   if (!text) return '';
-  return text
+  // First apply simple formatting
+  const formatted = text
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/__(.*?)__/g, '<u>$1</u>')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;">$1</a>')
     .replace(/\n/g, '<br>');
+
+  // Replace markdown links with anchors and attach meta labels via aria-describedby (hidden span)
+  return formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, label, url) => {
+    try {
+      const isBrowser = typeof window !== 'undefined' && typeof window.location !== 'undefined';
+      const resolved = isBrowser ? new URL(url, window.location.href) : null;
+      const origin = isBrowser ? window.location.origin : '';
+      const isExternal = resolved ? resolved.origin !== origin : /^https?:\/\//i.test(url);
+
+      // If external -> open in new tab, otherwise default to same tab
+      const target = isExternal ? '_blank' : '_self';
+      const rel = isExternal ? 'noopener noreferrer' : '';
+
+      // Build meta parts for accessibility (not visible)
+      const metaParts: string[] = [];
+      if (isExternal) metaParts.push('אתר חיצוני');
+      if (target === '_blank') metaParts.push('נפתח בכרטיסייה חדשה');
+
+      const relAttr = rel ? ` rel="${rel}"` : '';
+
+      // Add aria-description for links that open in a new tab
+      const ariaDescAttr = target === '_blank' ? ' aria-description="נפתח בכרטיסיה חדשה"' : '';
+      return `<a href="${url}" target="${target}"${relAttr}${ariaDescAttr} style="color:inherit;text-decoration:underline;">${label}</a>`;
+    } catch (e) {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" aria-description="נפתח בכרטיסיה חדשה" style="color:inherit;text-decoration:underline;">${label}</a>`;
+    }
+  });
+};
+
+// Render a heading element based on depth: depth 0 -> h3, depth 1 -> h4, ... up to h6
+const Heading: FC<{ depth: number; html: string; style?: React.CSSProperties }> = ({ depth, html, style }) => {
+  const level = Math.min(6, 3 + depth); // start at H3
+  const tag = (`h${level}` as unknown) as keyof JSX.IntrinsicElements;
+  return React.createElement(tag, { style: { margin: 0, ...style }, dangerouslySetInnerHTML: { __html: html } });
 };
 
 // Block item (text-block / heading-block) — no numbering
@@ -33,16 +69,16 @@ const BlockItem: FC<{ item: ListItem; depth: number }> = ({ item, depth }) => {
       padding: isHeading ? '32px 0' : '16px 0',
     }}>
       {isHeading ? (
-        <h3
+        <Heading
+          depth={depth}
+          html={parseTitle(item.title)}
           style={{
             fontSize: '22.5px',
             fontWeight: 700,
             color: '#272726',
             lineHeight: '1.6',
             fontFamily: "'Assistant', sans-serif",
-            margin: 0,
           }}
-          dangerouslySetInnerHTML={{ __html: parseTitle(item.title) }}
         />
       ) : (
         <span
@@ -106,30 +142,17 @@ const NestedItem: FC<NestedItemProps> = ({ item, numbering, depth }) => {
             fontFamily: "'Assistant', sans-serif",
           }}
         >
-          {isRoot ? (
-            <h3
-              style={{
-                fontSize: '22.5px',
-                fontWeight: 600,
-                color: '#272726',
-                lineHeight: '1.5',
-                fontFamily: "'Assistant', sans-serif",
-                margin: 0,
-              }}
-              dangerouslySetInnerHTML={{ __html: parseTitle(item.title) }}
-            />
-          ) : (
-            <span
-              style={{
-                fontSize: '19.2px',
-                fontWeight: 400,
-                color: '#272726',
-                lineHeight: '1.5',
-                fontFamily: "'Assistant', sans-serif",
-              }}
-              dangerouslySetInnerHTML={{ __html: parseTitle(item.title) }}
-            />
-          )}
+          <Heading
+            depth={depth}
+            html={parseTitle(item.title)}
+            style={{
+              fontSize: isRoot ? '22.5px' : '19.2px',
+              fontWeight: isRoot ? 600 : 400,
+              color: '#272726',
+              lineHeight: '1.5',
+              fontFamily: "'Assistant', sans-serif",
+            }}
+          />
         </span>
       </div>
       {item.description && (

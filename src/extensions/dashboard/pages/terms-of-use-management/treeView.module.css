@@ -1,0 +1,124 @@
+.treeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.treeNodeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: grab;
+  transition: background-color 0.2s;
+  user-select: none;
+}
+
+.treeNodeRow:hover {
+  background-color: #f9f9f9;
+}
+
+.treeNodeRow:active {
+  cursor: grabbing;
+}
+
+.nodeContentWrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 8px;
+  min-width: 0;
+}
+
+.dragHandle {
+  display: flex;
+  align-items: center;
+  color: #b0b0b0;
+  cursor: grab;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+.expandButton {
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.expandButton:hover {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+.noExpandButton {
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.nodeInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.levelBadge {
+  font-size: 12px;
+}
+
+.nodeActions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  visibility: hidden;
+  color: #666;
+}
+
+.iconButton:hover {
+  background-color: #e8e8e8;
+}
+
+.treeNodeRow:hover .iconButton {
+  visibility: visible;
+}
+
+.emptyState {
+  padding: 48px 24px;
+  text-align: center;
+  background-color: #f9f9f9;
+  border: 1px dashed #e0e0e0;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}

@@ -43,7 +43,7 @@ const Panel: FC = () => {
         </SidePanel.Content>
         <SidePanel.Footer noPadding>
           <SectionHelper fullWidth appearance="success" border="topBottom">
-            Learn more about <a href={SITE_WIDGETS_DOCS} target="_blank" rel="noopener noreferrer" title="Site Widget docs">Site Widgets</a>
+            Learn more about <a href={SITE_WIDGETS_DOCS} target="_blank" rel="noopener noreferrer" aria-description="נפתח בכרטיסיה חדשה" title="Site Widget docs">Site Widgets</a>
           </SectionHelper>
         </SidePanel.Footer>
       </SidePanel>

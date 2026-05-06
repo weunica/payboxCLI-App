@@ -1,5 +1,10 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect } from "react";
+// using plain div for collapse so CSS .open controls max-height
+import LegalContentBlock from "./LegalContentBlock";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Plus, Trash2, ArrowUp, ArrowDown, ChevronDown, ChevronUp } from "lucide-react";
+import LegalNumberedSubSections from "./LegalNumberedSubSections";
 
 const parseTitle = (text) => {
   if (!text) return "";
@@ -7,17 +12,18 @@ const parseTitle = (text) => {
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
     .replace(/__(.*?)__/g, "<u>$1</u>");
 };
-import LegalContentBlock from "./LegalContentBlock";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { Plus, Trash2, ArrowUp, ArrowDown, ChevronDown, ChevronUp } from "lucide-react";
-import LegalNumberedSubSections from "./LegalNumberedSubSections";
 
-export default function LegalSubSection({ subSection, isEditing, onChange, depth = 0, numbering = "", parentNumbering = undefined }) {
+const stripFormatting = (text) => {
+  if (!text) return "";
+  const noHtml = text.replace(/<[^>]+>/g, "");
+  return noHtml.replace(/\*\*|__|\*|`|_/g, "").replace(/\s+/g, " ").trim();
+};
+
+export default function LegalSubSection({ subSection, isEditing, onChange, depth = 0, numbering = "", parentNumbering = undefined, rootId }) {
   const [isOpen, setIsOpen] = useState(false);
-  const subSectionId = numbering ? `subsection-${numbering.replace(/\./g, '-')}` : `subsection-${Date.now()}`;
+  const subSectionId = rootId ? rootId : numbering ? `subsection-${numbering.replace(/\./g, '-')}` : `subsection-${Date.now()}`;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleInternalLink = (e) => {
       const target = e.target;
       if (target.tagName === 'A' && target.dataset.internalLink) {
@@ -103,11 +109,27 @@ export default function LegalSubSection({ subSection, isEditing, onChange, depth
     onChange({ ...subSection, content: newContent });
   };
 
+  const toggleOpen = () => {
+    setIsOpen((prev) => {
+      const next = !prev;
+      if (next) {
+        setTimeout(() => {
+          const el = document.getElementById(`${subSectionId}-content`);
+          if (el) el.focus();
+        }, 220);
+      }
+      return next;
+    });
+  };
+
   return (
     <div className={depth > 0 ? "subSectionWrapperIndented" : "subSectionWrapper"} id={subSectionId}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggleOpen}
         className="subSectionButton"
+        aria-expanded={isOpen}
+        aria-controls={`${subSectionId}-content`}
+        aria-describedby={`${subSectionId}-title`}
       >
         <div className={isOpen ? "subSectionCircle subSectionCircleOpen" : "subSectionCircle"}>
           {isOpen ? (
@@ -116,31 +138,40 @@ export default function LegalSubSection({ subSection, isEditing, onChange, depth
             <ChevronDown className="subSectionCircleIcon" />
           )}
         </div>
+
         {isEditing ? (
           <Input
-            value={subSection.title}
+            value={subSection.title || ""}
             onChange={(e) => {
               e.stopPropagation();
               onChange({ ...subSection, title: e.target.value });
             }}
+            id={`${subSectionId}-title`}
             onClick={(e) => e.stopPropagation()}
-            className="text-sm font-medium flex-1"
+            className="text-sm font-semibold flex-1"
           />
         ) : (
-          <span className="subSectionTitle" dangerouslySetInnerHTML={{ __html: parseTitle(subSection.title) }} />
+          (() => {
+            const Heading = ({ depth, html, style, id }) => {
+              const level = Math.min(6, 3 + depth);
+              const tag = `h${level}`;
+              return React.createElement(tag, { id, style: { margin: 0, ...style }, dangerouslySetInnerHTML: { __html: html } });
+            };
+            return (
+              <Heading id={`${subSectionId}-title`} depth={depth} html={parseTitle(subSection.title)} style={{ fontWeight: 600 }} />
+            );
+          })()
         )}
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="subSectionContentWrapper"
-          >
-            <div className="subSectionContent">
+      <div
+        id={`${subSectionId}-content`}
+        className={isOpen ? "subSectionContentWrapper open" : "subSectionContentWrapper"}
+        role="region"
+        aria-hidden={!isOpen}
+        tabIndex={-1}
+      >
+        <div className="subSectionContent" style={{ opacity: isOpen ? 1 : 0, transition: 'opacity .18s ease' }}>
               {(subSection.content || []).map((block, blockIdx) => (
                 <div key={blockIdx} className="relative group/block">
                   {isEditing && (
@@ -207,9 +238,7 @@ export default function LegalSubSection({ subSection, isEditing, onChange, depth
                 </div>
               )}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
     </div>
   );
 }

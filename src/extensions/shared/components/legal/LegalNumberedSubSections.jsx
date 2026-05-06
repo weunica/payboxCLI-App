@@ -13,16 +13,21 @@ const parseTitle = (text) => {
     .replace(/__(.*?)__/g, "<u>$1</u>");
 };
 
-function NumberedSubSectionItem({ item, isEditing, onChange, numbering }) {
+const stripFormatting = (text) => {
+  if (!text) return "";
+  const noHtml = text.replace(/<[^>]+>/g, "");
+  return noHtml.replace(/\*\*|__|\*|`|_/g, "").replace(/\s+/g, " ").trim();
+};
+
+function NumberedSubSectionItem({ item, isEditing, onChange, numbering, itemId }) {
   const [isOpen, setIsOpen] = useState(false);
-  const itemId = `subsection-${numbering.replace(/\./g, '-')}`;
 
   React.useEffect(() => {
     const handleInternalLink = (e) => {
       const target = e.target;
       if (target.tagName === 'A' && target.dataset.internalLink) {
         const anchorId = target.dataset.internalLink;
-        
+
         if (anchorId === itemId) {
           e.preventDefault();
           setIsOpen(true);
@@ -95,10 +100,13 @@ function NumberedSubSectionItem({ item, isEditing, onChange, numbering }) {
   };
 
   return (
-    <div className="numberedItemWrapper" id={itemId}>
+    <div className="numberedItemWrapper">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="subSectionButton"
+        aria-expanded={isOpen}
+        aria-controls={`${itemId}-content`}
+        aria-describedby={`${itemId}-title`}
       >
         <div className="numberedItemToggleGroup">
           <div className={isOpen ? "subSectionCircle subSectionCircleOpen" : "subSectionCircle"}>
@@ -117,11 +125,22 @@ function NumberedSubSectionItem({ item, isEditing, onChange, numbering }) {
               e.stopPropagation();
               onChange({ ...item, title: e.target.value });
             }}
+            id={`${itemId}-title`}
             onClick={(e) => e.stopPropagation()}
             className="text-sm font-medium flex-1"
           />
         ) : (
-          <span className="subSectionTitle" dangerouslySetInnerHTML={{ __html: parseTitle(item.title) }} />
+          (() => {
+            const Heading = ({ depth, html, style, id }) => {
+              const level = Math.min(6, 3 + depth);
+              const tag = `h${level}`;
+              return React.createElement(tag, { id, style: { margin: 0, ...style }, dangerouslySetInnerHTML: { __html: html } });
+            };
+            const depth = numbering ? Math.max(0, numbering.toString().split('.').length - 1) : 0;
+            return (
+              <Heading id={`${itemId}-title`} depth={depth} html={parseTitle(item.title)} style={{ fontWeight: 600 }} />
+            );
+          })()
         )}
       </button>
 
@@ -132,7 +151,8 @@ function NumberedSubSectionItem({ item, isEditing, onChange, numbering }) {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="subSectionContentWrapper"
+            id={`${itemId}-content`}
+            className={isOpen ? "subSectionContentWrapper open" : "subSectionContentWrapper"}
           >
             <div className="subSectionContent">
               {(item.content || []).map((block, blockIdx) => (
@@ -175,6 +195,7 @@ function NumberedSubSectionItem({ item, isEditing, onChange, numbering }) {
                       depth={0}
                       numbering={numbering}
                       parentNumbering={numbering}
+                      rootId={itemId}
                     />
                   ) : (
                     <LegalContentBlock
@@ -257,49 +278,53 @@ export default function LegalNumberedSubSections({ block, isEditing, onChange, p
 
   return (
     <div className="contentBlockWrapper">
-      {block.items.map((item, idx) => {
-        const numbering = parentNumbering ? `${parentNumbering}.${idx + 1}` : `${idx + 1}`;
-        return (
-          <div key={idx} className="relative group/item">
-            {isEditing && (
-              <div className="absolute -left-12 top-3 flex flex-col gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity z-10">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={() => moveItemUp(idx)}
-                  disabled={idx === 0}
-                >
-                  <ArrowUp className="h-3 w-3 text-gray-400" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={() => moveItemDown(idx)}
-                  disabled={idx === block.items.length - 1}
-                >
-                  <ArrowDown className="h-3 w-3 text-gray-400" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={() => removeItem(idx)}
-                >
-                  <Trash2 className="h-4 w-4 text-red-400" />
-                </Button>
-              </div>
-            )}
-            <NumberedSubSectionItem
-              item={item}
-              isEditing={isEditing}
-              onChange={(newItem) => handleItemChange(idx, newItem)}
-              numbering={numbering}
-            />
-          </div>
-        );
-      })}
+      <ol className="numberedList" dir="rtl" aria-label="תתי-סעיפים">
+        {block.items.map((item, idx) => {
+          const numbering = parentNumbering ? `${parentNumbering}.${idx + 1}` : `${idx + 1}`;
+          const itemId = `subsection-${numbering.replace(/\./g, '-')}`;
+          return (
+            <li key={idx} id={itemId} className="numberedItem relative group/item">
+              {isEditing && (
+                <div className="absolute -left-12 top-3 flex flex-col gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity z-10">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => moveItemUp(idx)}
+                    disabled={idx === 0}
+                  >
+                    <ArrowUp className="h-3 w-3 text-gray-400" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => moveItemDown(idx)}
+                    disabled={idx === block.items.length - 1}
+                  >
+                    <ArrowDown className="h-3 w-3 text-gray-400" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => removeItem(idx)}
+                  >
+                    <Trash2 className="h-4 w-4 text-red-400" />
+                  </Button>
+                </div>
+              )}
+              <NumberedSubSectionItem
+                item={item}
+                isEditing={isEditing}
+                onChange={(newItem) => handleItemChange(idx, newItem)}
+                numbering={numbering}
+                itemId={itemId}
+              />
+            </li>
+          );
+        })}
+      </ol>
       {isEditing && (
         <Button variant="ghost" size="sm" onClick={addItem} className="mt-2 text-xs text-blue-600">
           <Plus className="h-3 w-3 ml-1" />

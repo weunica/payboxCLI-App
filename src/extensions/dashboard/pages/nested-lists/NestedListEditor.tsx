@@ -27,7 +27,7 @@ const parseTitle = (text: string): string => {
   return text
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/__(.*?)__/g, '<u>$1</u>')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" aria-description="נפתח בכרטיסיה חדשה">$1</a>');
 };
 
 // Textarea that auto-resizes to content height on mount and on every value change

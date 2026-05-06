@@ -1,12 +1,20 @@
 import React, { useState } from "react";
 import { Trash2, Plus, ArrowUp, ArrowDown, Minus } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+// using plain div for collapse so CSS .open controls max-height
 
 const parseTitle = (text) => {
   if (!text) return "";
   return text
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
     .replace(/__(.*?)__/g, "<u>$1</u>");
+};
+
+const stripFormatting = (text) => {
+  if (!text) return "";
+  // remove HTML tags
+  const noHtml = text.replace(/<[^>]+>/g, "");
+  // remove common markdown tokens
+  return noHtml.replace(/\*\*|__|\*|`|_/g, "").replace(/\s+/g, " ").trim();
 };
 import LegalContentBlock from "./LegalContentBlock";
 import LegalSubSection from "./LegalSubSection";
@@ -103,12 +111,29 @@ export default function LegalSection({ section, isEditing, onChange, sectionInde
     document.addEventListener('click', handleInternalLink);
     return () => document.removeEventListener('click', handleInternalLink);
   }, [sectionId, sectionNumber]);
+  const toggleOpen = () => {
+    setIsOpen((prev) => {
+      const next = !prev;
+      if (next) {
+        // after animation, move focus into content for screen-reader users
+        setTimeout(() => {
+          const el = document.getElementById(`${sectionId}-content`);
+          if (el) el.focus();
+        }, 260);
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="sectionWrapper" id={sectionId} ref={sectionRef}>
+
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggleOpen}
         className="sectionButton"
+        aria-expanded={isOpen}
+        aria-controls={`${sectionId}-content`}
+        aria-describedby={`${sectionId}-title`}
       >
         <div className="sectionToggleGroup">
           <div className={isOpen ? "sectionCircle sectionCircleOpen" : "sectionCircle"}>
@@ -127,24 +152,37 @@ export default function LegalSection({ section, isEditing, onChange, sectionInde
               e.stopPropagation();
               onChange({ ...section, title: e.target.value });
             }}
+            id={`${sectionId}-title`}
             onClick={(e) => e.stopPropagation()}
             className="text-sm font-semibold flex-1"
           />
         ) : (
-          <span className="sectionTitle" dangerouslySetInnerHTML={{ __html: parseTitle(section.title) }} />
+          (() => {
+            const Heading = ({ depth, html, style, id }) => {
+              const level = Math.min(6, 3 + depth);
+              const tag = `h${level}`;
+              return React.createElement(tag, { id, style: { margin: 0, ...style }, dangerouslySetInnerHTML: { __html: html } });
+            };
+            return (
+              <Heading
+                id={`${sectionId}-title`}
+                depth={0}
+                html={parseTitle(section.title)}
+                style={{ fontWeight: 700, fontSize: '20px' }}
+              />
+            );
+          })()
         )}
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="sectionContentWrapper"
-          >
-            <div className="sectionContent">
+      <div
+        id={`${sectionId}-content`}
+        className={isOpen ? "sectionContentWrapper open" : "sectionContentWrapper"}
+        role="region"
+        aria-hidden={!isOpen}
+        tabIndex={-1}
+      >
+        <div className="sectionContent" style={{ opacity: isOpen ? 1 : 0, transition: 'opacity .18s ease' }}>
               {(section.content || []).map((block, blockIdx) => (
                 <div key={blockIdx} className="relative group/block">
                   {isEditing && (
@@ -232,9 +270,7 @@ export default function LegalSection({ section, isEditing, onChange, sectionInde
                 </div>
               )}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
     </div>
   );
 }

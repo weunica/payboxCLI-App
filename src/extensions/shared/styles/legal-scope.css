@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap');
-
 /* ============ Root Scope ============ */
+.legal-scope, .legal-scope * {
+  box-sizing: border-box; /* מבטיח שהפדינג והבורדר יחושבו בתוך הרוחב ולא מעליו */
+}
 .legal-scope {
   background-color: #ffffff;
   font-family: 'Assistant', sans-serif;
@@ -8,6 +10,7 @@
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   width: 100%;
+  max-width: 100%;
 }
 
 .legal-scope * {
@@ -16,7 +19,9 @@
 
 /* ============ Document Container ============ */
 .legal-scope .documentContainer {
-  width: 100%;
+  box-sizing: border-box;
+  width: calc(100% - 32px);
+  max-width: calc(100% - 32px);
 }
 
 /* ============ Document Header ============ */
@@ -88,11 +93,11 @@
   justify-content: center;
   transition: all 0.2s;
   flex-shrink: 0;
-  background-color: #d1d5db;
+  background-color: #767676;
 }
 
 .legal-scope .sectionCircleOpen {
-  background-color: #029BE5;
+  background-color: #005398;
 }
 
 .legal-scope .sectionCircleIcon {
@@ -116,7 +121,17 @@
 }
 
 .legal-scope .sectionContentWrapper {
+  /* Keep the content in the DOM even when collapsed so in-page anchors and screen-readers
+     can reference the region. We visually collapse it using max-height + overflow. */
+  max-height: 0;
   overflow: hidden;
+  transition: max-height 0.25s ease, opacity 0.2s ease;
+  opacity: 0;
+}
+
+.legal-scope .sectionContentWrapper.open {
+  max-height: 2000px; /* sufficiently large to fit expanded content */
+  opacity: 1;
 }
 
 .legal-scope .sectionContent {
@@ -162,11 +177,11 @@
   justify-content: center;
   transition: all 0.2s;
   flex-shrink: 0;
-  background-color: #d1d5db;
+  background-color: #767676;
 }
 
 .legal-scope .subSectionCircleOpen {
-  background-color: #029BE5;
+  background-color: #005398;
 }
 
 .legal-scope .subSectionCircleIcon {
@@ -190,7 +205,15 @@
 }
 
 .legal-scope .subSectionContentWrapper {
+  max-height: 0;
   overflow: hidden;
+  transition: max-height 0.25s ease, opacity 0.2s ease;
+  opacity: 0;
+}
+
+.legal-scope .subSectionContentWrapper.open {
+  max-height: 2000px;
+  opacity: 1;
 }
 
 .legal-scope .subSectionContent {

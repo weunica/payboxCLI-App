@@ -15,10 +15,17 @@ const parseTextWithLinks = (text) => {
   // Then parse links: [text](url) or [text](#anchor)
   html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, linkText, url) => {
     if (url.startsWith('#')) {
-      const anchorId = url.substring(1);
-      return `<a href="${url}" class="text-blue-600 hover:text-blue-800 underline cursor-pointer" data-internal-link="${anchorId}">${linkText}</a>`;
+      const rawAnchor = url.substring(1);
+      // normalize anchor ids: replace dots with hyphens so e.g. 4.1 -> 4-1
+      let anchorId = rawAnchor.replace(/\./g, '-');
+      // If anchor is numeric (e.g. "4-1" or "4.1") and doesn't already include the prefix,
+      // prefix it with 'subsection-' so it matches element ids like 'subsection-4-1'
+      if (!anchorId.startsWith('subsection-') && /^[0-9]/.test(anchorId)) {
+        anchorId = `subsection-${anchorId}`;
+      }
+      return `<a href="#${anchorId}" class="text-blue-600 hover:text-blue-800 underline cursor-pointer" data-internal-link="${anchorId}">${linkText}</a>`;
     } else {
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline">${linkText}</a>`;
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" aria-description="נפתח בכרטיסיה חדשה" class="text-blue-600 hover:text-blue-800 underline">${linkText}</a>`;
     }
   });
   
@@ -28,6 +35,13 @@ const parseTextWithLinks = (text) => {
 export default function LegalContentBlock({ block, isEditing, onChange, parentNumbering }) {
   if (!block) return null;
   const type = block.type;
+
+  // Helper: render semantic heading based on parentNumbering depth
+  const Heading = ({ depth, html, style }) => {
+    const level = Math.min(6, 3 + depth);
+    const tag = `h${level}`;
+    return React.createElement(tag, { style: { margin: 0, ...style }, dangerouslySetInnerHTML: { __html: html } });
+  };
 
   if (type === "paragraph") {
     return isEditing ? (
@@ -63,12 +77,18 @@ export default function LegalContentBlock({ block, isEditing, onChange, parentNu
         />
       </div>
     ) : (
-      <h4
-        className="heading"
-        dangerouslySetInnerHTML={{
-          __html: parseTextWithLinks(block.text)
-        }}
-      />
+      (() => {
+        const depth = parentNumbering ? parentNumbering.toString().split('.').length : 0;
+        return (
+          <Heading
+            depth={depth}
+            html={parseTextWithLinks(block.text)}
+            style={{
+              fontFamily: 'Assistant, sans-serif',
+            }}
+          />
+        );
+      })()
     );
   }
 

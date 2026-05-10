@@ -24,10 +24,9 @@ function NumberedSubSectionItem({ item, isEditing, onChange, numbering, itemId }
 
   React.useEffect(() => {
     const handleInternalLink = (e) => {
-      const target = e.target;
-      if (target.tagName === 'A' && target.dataset.internalLink) {
-        const anchorId = target.dataset.internalLink;
-
+      const anchor = e.target && e.target.closest ? e.target.closest('a') : null;
+      if (anchor && anchor.dataset && anchor.dataset.internalLink) {
+        const anchorId = anchor.dataset.internalLink;
         if (anchorId === itemId) {
           e.preventDefault();
           setIsOpen(true);
@@ -36,14 +35,27 @@ function NumberedSubSectionItem({ item, isEditing, onChange, numbering, itemId }
             if (element) {
               element.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-          }, 100);
+          }, 400);
         }
       }
     };
 
+    const handleOpenSubSection = (e) => {
+      const targetEl = document.getElementById(e.detail.anchorId);
+      const wrapperEl = document.getElementById(itemId);
+      if (e.detail.anchorId === itemId || (targetEl && wrapperEl && wrapperEl.contains(targetEl))) {
+        setIsOpen(true);
+      }
+    };
+
     document.addEventListener('click', handleInternalLink);
-    return () => document.removeEventListener('click', handleInternalLink);
+    document.addEventListener('openSubSection', handleOpenSubSection);
+    return () => {
+      document.removeEventListener('click', handleInternalLink);
+      document.removeEventListener('openSubSection', handleOpenSubSection);
+    };
   }, [itemId]);
+
 
   const handleContentChange = (blockIdx, newBlock) => {
     const newContent = [...(item.content || [])];
@@ -106,7 +118,7 @@ function NumberedSubSectionItem({ item, isEditing, onChange, numbering, itemId }
         className="subSectionButton"
         aria-expanded={isOpen}
         aria-controls={`${itemId}-content`}
-        aria-describedby={`${itemId}-title`}
+        aria-label={`הרחבה - ${stripFormatting(item.title || '')}`}
       >
         <div className="numberedItemToggleGroup">
           <div className={isOpen ? "subSectionCircle subSectionCircleOpen" : "subSectionCircle"}>
@@ -138,7 +150,9 @@ function NumberedSubSectionItem({ item, isEditing, onChange, numbering, itemId }
             };
             const depth = numbering ? Math.max(0, numbering.toString().split('.').length - 1) : 0;
             return (
-              <Heading id={`${itemId}-title`} depth={depth} html={parseTitle(item.title)} style={{ fontWeight: 600 }} />
+              <>
+                <Heading id={`${itemId}-title`} depth={depth} html={parseTitle(item.title)} style={{ fontWeight: 600 }} />
+              </>
             );
           })()
         )}

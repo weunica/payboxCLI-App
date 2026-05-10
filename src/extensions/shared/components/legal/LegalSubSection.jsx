@@ -19,7 +19,7 @@ const stripFormatting = (text) => {
   return noHtml.replace(/\*\*|__|\*|`|_/g, "").replace(/\s+/g, " ").trim();
 };
 
-export default function LegalSubSection({ subSection, isEditing, onChange, depth = 0, numbering = "", parentNumbering = undefined, rootId }) {
+export default function LegalSubSection({ subSection, isEditing, onChange, depth = 0, numbering = "", parentNumbering = undefined, rootId ,parentTitle }) {
   const [isOpen, setIsOpen] = useState(false);
   const subSectionId = rootId ? rootId : numbering ? `subsection-${numbering.replace(/\./g, '-')}` : `subsection-${Date.now()}`;
 
@@ -73,6 +73,8 @@ export default function LegalSubSection({ subSection, isEditing, onChange, depth
     };
   }, [subSectionId]);
 
+  // Compute accessible label from the first button inside content (preferred), fallback to heading
+  
   const handleContentChange = (blockIdx, newBlock) => {
     const newContent = [...(subSection.content || [])];
     newContent[blockIdx] = newBlock;
@@ -149,7 +151,7 @@ export default function LegalSubSection({ subSection, isEditing, onChange, depth
         className="subSectionButton"
         aria-expanded={isOpen}
         aria-controls={`${subSectionId}-content`}
-        aria-describedby={`${subSectionId}-title`}
+        aria-label={`הרחבה - ${stripFormatting(parentTitle || '')}`}
       >
         <div className={isOpen ? "subSectionCircle subSectionCircleOpen" : "subSectionCircle"}>
           {isOpen ? (
@@ -178,7 +180,9 @@ export default function LegalSubSection({ subSection, isEditing, onChange, depth
               return React.createElement(tag, { id, style: { margin: 0, ...style }, dangerouslySetInnerHTML: { __html: html } });
             };
             return (
-              <Heading id={`${subSectionId}-title`} depth={depth} html={parseTitle(subSection.title)} style={{ fontWeight: 600 }} />
+              <>
+                <Heading id={`${subSectionId}-title`} depth={depth} html={parseTitle(subSection.title)} style={{ fontWeight: 600 }} />
+              </>
             );
           })()
         )}
@@ -232,6 +236,7 @@ export default function LegalSubSection({ subSection, isEditing, onChange, depth
                       depth={depth + 1}
                       numbering={`${numbering}.${blockIdx + 1}`}
                       parentNumbering={numbering}
+                      parentTitle={subSection.title} 
                     />
                   ) : block.type === "numbered_subsections" ? (
                     <LegalNumberedSubSections

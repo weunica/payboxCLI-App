@@ -4,6 +4,15 @@ import { Input } from "../ui/input";
 import { Plus, Trash2, ArrowUp, ArrowDown, ArrowRight, ArrowDown as ArrowDownMerge, X } from "lucide-react";
 
 
+const normalizeAnchorId = (raw) => {
+  if (!raw) return raw;
+  let id = raw.replace(/\./g, '-');
+  if (!id.startsWith('subsection-') && /^[0-9]/.test(id)) {
+    id = `subsection-${id}`;
+  }
+  return id;
+};
+
 const parseTextWithLinks = (text) => {
   if (!text) return "";
   let html = text
@@ -12,8 +21,9 @@ const parseTextWithLinks = (text) => {
   
   html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, linkText, url) => {
     if (url.startsWith('#')) {
-      const anchorId = url.substring(1);
-      return `<a href="${url}" class="text-blue-600 hover:text-blue-800 underline cursor-pointer" data-internal-link="${anchorId}">${linkText}</a>`;
+      const raw = url.substring(1);
+      const anchorId = normalizeAnchorId(raw);
+      return `<a href="#${anchorId}" class="text-blue-600 hover:text-blue-800 underline cursor-pointer" data-internal-link="${anchorId}">${linkText}</a>`;
     } else {
       return `<a href="${url}" target="_blank" rel="noopener noreferrer" aria-description="נפתח בכרטיסיה חדשה" class="text-blue-600 hover:text-blue-800 underline">${linkText}</a>`;
     }

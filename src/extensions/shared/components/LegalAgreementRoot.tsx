@@ -4,6 +4,7 @@ import { getLegalDocument, saveLegalDocument } from "../backend/legalDocument.we
 import type { LegalDocument } from "../types/legalDocument";
 import '../styles/legal.css';
 import '../styles/legal-scope.css';
+import { resolveInternalLinkLabels } from "../lib/resolveInternalLinkLabels";
 
 interface Props {
   readOnly?: boolean;
@@ -37,9 +38,22 @@ const LegalAgreementRoot: React.FC<Props> = ({
 
     fetchData();
   }, []);
+  // After initial render, resolve internal link accessible names once (deferred)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !document) return;
+    const id = setTimeout(() => {
+      try {
+        resolveInternalLinkLabels(document);
+      } catch (err) {
+        // swallow errors to avoid breaking render
+        // eslint-disable-next-line no-console
+        console.warn('resolveInternalLinkLabels failed', err);
+      }
+    }, 100);
+    return () => clearTimeout(id);
+  }, []);
 
   // debug overlay removed
-
   const handleSave = async (updatedData: LegalDocument) => {
     if (readOnly) return;
 

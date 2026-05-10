@@ -272,6 +272,7 @@ const TermsOfUseAccordion: FC<WidgetProps> = ({
           aria-expanded={isExpanded}
           aria-controls={`${section._id}-content`}
           aria-describedby={`${section._id}-title`}
+          aria-label={hasChildren ? `הרחבה - ${section.title}` : `הרחבה - ${section.title}`}
         >
           {/* Chevron Icon */}
           {hasChildren && (

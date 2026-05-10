@@ -3,6 +3,15 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 
+const normalizeAnchorId = (raw) => {
+  if (!raw) return raw;
+  let id = raw.replace(/\./g, '-');
+  if (!id.startsWith('subsection-') && /^[0-9]/.test(id)) {
+    id = `subsection-${id}`;
+  }
+  return id;
+};
+
 const parseTextWithLinks = (text) => {
   let html = text
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
@@ -10,8 +19,9 @@ const parseTextWithLinks = (text) => {
   
   html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, linkText, url) => {
     if (url.startsWith('#')) {
-      const anchorId = url.substring(1);
-      return `<a href="${url}" class="text-blue-600 hover:text-blue-800 underline cursor-pointer" data-internal-link="${anchorId}">${linkText}</a>`;
+      const raw = url.substring(1);
+      const anchorId = normalizeAnchorId(raw);
+      return `<a href="#${anchorId}" class="text-blue-600 hover:text-blue-800 underline cursor-pointer" data-internal-link="${anchorId}">${linkText}</a>`;
     } else {
       return `<a href="${url}" target="_blank" rel="noopener noreferrer" aria-description="נפתח בכרטיסיה חדשה" class="text-blue-600 hover:text-blue-800 underline">${linkText}</a>`;
     }

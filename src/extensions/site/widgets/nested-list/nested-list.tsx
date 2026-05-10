@@ -24,6 +24,15 @@ const parseTitle = (text: string): string => {
     .replace(/__(.*?)__/g, '<u>$1</u>')
     .replace(/\n/g, '<br>');
 
+  const normalizeAnchorId = (raw: string) => {
+    if (!raw) return raw;
+    let id = raw.replace(/\./g, '-');
+    if (!id.startsWith('subsection-') && /^[0-9]/.test(id)) {
+      id = `subsection-${id}`;
+    }
+    return id;
+  };
+
   // Replace markdown links with anchors and attach meta labels via aria-describedby (hidden span)
   return formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, label, url) => {
     try {
@@ -44,6 +53,13 @@ const parseTitle = (text: string): string => {
       const relAttr = rel ? ` rel="${rel}"` : '';
 
       // Add aria-description for links that open in a new tab
+      // If the url is an internal anchor (starts with '#'), normalize and add aria-describedby
+      if (url.startsWith('#')) {
+        const raw = url.substring(1);
+        const anchorId = normalizeAnchorId(raw);
+        return `<a href="#${anchorId}" target="${target}"${relAttr} style="color:inherit;text-decoration:underline;" data-internal-link="${anchorId}">${label}</a>`;
+      }
+
       const ariaDescAttr = target === '_blank' ? ' aria-description="נפתח בכרטיסיה חדשה"' : '';
       return `<a href="${url}" target="${target}"${relAttr}${ariaDescAttr} style="color:inherit;text-decoration:underline;">${label}</a>`;
     } catch (e) {

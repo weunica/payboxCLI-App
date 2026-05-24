@@ -127,22 +127,23 @@ closeModal() {
         background-color: ${bgColor};
         color: ${textColor};
         border: 1.5px solid ${borderColor};
-        padding: 6px 8px 6px 6px; border-radius: 50px;
+        padding: 6px 20px; border-radius: 50px;
         cursor: pointer;
         font-family: 'Assistant', sans-serif;
         font-size: 18px; font-weight: bold;
+        line-height: 18px;
         display: inline-flex; align-items: center; justify-content: flex-start;
-        gap: 2px; transition: all 0.2s; direction: ltr; /* arrow on left */
+        gap: 8px; transition: all 0.2s; direction: ltr; /* arrow on left */
         box-sizing: border-box;
       }
 
       /* circular chevron on the left (separate background) */
-      .arrow { display: ${showArrow ? 'inline-flex' : 'none'}; width: 36px; height: 32px; min-width:36px; 
+      .arrow { display: ${showArrow ? 'inline-flex' : 'none'}; width: 24px; height: 24px; min-width:24px; 
         background: ${arrowBgColor};
-        color: ${arrowIconColor}; border-radius: 999px; align-items: center; justify-content: center; font-weight: 700; font-size: 18px;
+        color: ${arrowIconColor}; border-radius: 999px; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;
         box-shadow: none; flex: 0 0 auto;
       }
-      .btn-text{ direction: rtl; color: ${textColor}; padding: 6px 6px; }
+      .btn-text{ direction: rtl; color: ${textColor}; padding: 0; }
       
       .modal-overlay { 
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;

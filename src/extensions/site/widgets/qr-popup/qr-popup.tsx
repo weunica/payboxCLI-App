@@ -35,7 +35,7 @@ const initAppsFlyerEngine = () => {
 
 class MyElement extends HTMLElement {
   static get observedAttributes() {
-    return ['display-name', 'modal-title', 'modal-subtitle', 'step-1', 'step-2', 'step-3', 'deeplink-value', 'aria-label-text', 'btn-bg-color', 'btn-border-color', 'btn-text-color', 'show-arrow'];
+    return ['display-name', 'modal-title', 'modal-subtitle', 'step-1', 'step-2', 'step-3', 'deeplink-value', 'aria-label-text', 'btn-bg-color', 'btn-border-color', 'btn-text-color', 'arrow-bg-color', 'arrow-color', 'show-arrow'];
   }
 
   constructor() {
@@ -108,8 +108,11 @@ closeModal() {
   render() {
     const displayName = this.getAttribute('display-name') || 'להצטרפות בחינם';
     const bgColor = this.getAttribute('btn-bg-color') || 'transparent';
-    const borderColor = this.getAttribute('btn-border-color') || '#ffffff';
+    const borderColor = this.getAttribute('btn-border-color') || 'transparent';
     const textColor = this.getAttribute('btn-text-color') || '#ffffff';
+    const arrowIconColor = this.getAttribute('arrow-color') || textColor;
+    // Force arrow background always transparent
+    const arrowBgColor = 'transparent';
     const showArrow = this.getAttribute('show-arrow') !== 'false';
     const ariaLabel = this.getAttribute('aria-label-text') || displayName;
 
@@ -121,17 +124,25 @@ closeModal() {
       @media (max-width: 1000px) { :host { justify-content: center; } }
 
       .cta-button {
-        background-color: ${bgColor}; 
-        color: ${textColor}; 
+        background-color: ${bgColor};
+        color: ${textColor};
         border: 1.5px solid ${borderColor};
-        padding: 8px 30px; border-radius: 50px;
-         cursor: pointer;
+        padding: 6px 8px 6px 6px; border-radius: 50px;
+        cursor: pointer;
         font-family: 'Assistant', sans-serif;
-        font-size: 18px; font-weight: 600;
-        display: inline-flex; align-items: center; justify-content: center;
-        gap: 10px; transition: all 0.2s; direction: rtl;
+        font-size: 18px; font-weight: bold;
+        display: inline-flex; align-items: center; justify-content: flex-start;
+        gap: 2px; transition: all 0.2s; direction: ltr; /* arrow on left */
+        box-sizing: border-box;
       }
-      .arrow { display: ${showArrow ? 'inline-block' : 'none'}; font-weight: bold; }
+
+      /* circular chevron on the left (separate background) */
+      .arrow { display: ${showArrow ? 'inline-flex' : 'none'}; width: 36px; height: 32px; min-width:36px; 
+        background: ${arrowBgColor};
+        color: ${arrowIconColor}; border-radius: 999px; align-items: center; justify-content: center; font-weight: 700; font-size: 18px;
+        box-shadow: none; flex: 0 0 auto;
+      }
+      .btn-text{ direction: rtl; color: ${textColor}; padding: 6px 6px; }
       
       .modal-overlay { 
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -172,8 +183,12 @@ closeModal() {
     </style>
 
     <button class="cta-button" aria-label="${ariaLabel}" aria-haspopup="dialog">
-      <span>${displayName}</span>
-      <span class="arrow" aria-hidden="true">></span>
+      <span class="arrow" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="btn-text">${displayName}</span>
     </button>
 
     <div class="modal-overlay" 

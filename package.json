@@ -11,6 +11,7 @@
     "preview": "wix preview",
     "release": "wix release",
     "generate": "wix generate"
+    
   },
   "dependencies": {
     "@fontsource/assistant": "^5.2.9",

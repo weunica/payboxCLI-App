@@ -4,8 +4,6 @@ import nestedListsPage from './extensions/dashboard/pages/nested-lists/nested-li
 import qrPopup from './extensions/site/widgets/qr-popup/qr-popup.extension.ts';
 import legalLayer from './extensions/site/widgets/legal-layer/legal-layer.extension.ts';
 import nestedList from './extensions/site/widgets/nested-list/nested-list.extension.ts';
-
-
 export default app()
   .use(tosPage)
   .use(nestedListsPage)

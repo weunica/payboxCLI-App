@@ -177,7 +177,7 @@ export default function LegalSubSection({ subSection, isEditing, onChange, depth
             const Heading = ({ depth, html, style, id }) => {
               const level = Math.min(6, 3 + depth);
               const tag = `h${level}`;
-              return React.createElement(tag, { id, style: { margin: 0, ...style }, dangerouslySetInnerHTML: { __html: html } });
+              return React.createElement(tag, { id, className: 'subSectionTitle', style: { margin: 0, ...style }, dangerouslySetInnerHTML: { __html: html } });
             };
             return (
               <>

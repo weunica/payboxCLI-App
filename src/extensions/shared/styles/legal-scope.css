@@ -6,6 +6,9 @@
 .legal-scope {
   background-color: #ffffff;
   font-family: 'Assistant', sans-serif;
+  /* Ensure a stable root font-size for the legal scope so child px/rem calculations are predictable */
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%; /* prevent mobile/browser text autoscaling */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -204,6 +207,24 @@
   font-size: 19.2px;
 }
 
+/* Strong overrides to avoid unexpected font-size changes from parent/global rules or zoom adjustments */
+.legal-scope .sectionNumber,
+.legal-scope .sectionTitle,
+.legal-scope .subSectionNumbering,
+.legal-scope .subSectionTitle,
+.legal-scope .paragraph,
+.legal-scope .heading,
+.legal-scope .bulletItem,
+.legal-scope .numberedItem,
+.legal-scope .table {
+  font-size: 19.2px !important;
+}
+
+/* Keep document title larger */
+.legal-scope .docTitle {
+  font-size: 29px !important;
+}
+
 .legal-scope .subSectionContentWrapper {
   max-height: 0;
   overflow: hidden;
@@ -365,6 +386,71 @@
 
 .legal-scope .numberedItemSubList {
   margin-top: 0.5rem;
+}
+
+/* Target nested lists inside subsections to prevent outside rules from shrinking them */
+.legal-scope .subSectionContent ul,
+.legal-scope .subSectionContent ol,
+.legal-scope .subSectionContent ul li,
+.legal-scope .subSectionContent ol li,
+.legal-scope .numberedItemSubList,
+.legal-scope .numberedItemSubList li {
+  font-size: 19.2px !important;
+}
+
+/* Ensure heading elements inside legal subsections and nested lists keep the intended size */
+.legal-scope .subSectionContent h3,
+.legal-scope .subSectionContent h4,
+.legal-scope .subSectionContent h5,
+.legal-scope .subSectionContent h6,
+.legal-scope .numberedItemSubList h3,
+.legal-scope .numberedItemSubList h4,
+.legal-scope .numberedItemSubList h5,
+.legal-scope .numberedItemSubList h6 {
+  font-size: 19.2px !important;
+  line-height: 1.25;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Also ensure headings directly inside sectionContent (non-collapsible lists) keep the intended size */
+.legal-scope .sectionContent h3,
+.legal-scope .sectionContent h4,
+.legal-scope .sectionContent h5,
+.legal-scope .sectionContent h6 {
+  font-size: 19.2px !important;
+  line-height: 1.25 !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+/* Fallback: force headings anywhere inside the legal scope to the expected size */
+.legal-scope h3,
+.legal-scope h4,
+.legal-scope h5,
+.legal-scope h6 {
+  font-size: 19.2px !important;
+  line-height: 1.25 !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+/* Stronger, high-specificity fallback for numbered/bullet sub-lists and their descendants */
+.legal-scope .numberedItemSubList,
+.legal-scope .numberedItemSubList *,
+.legal-scope .numberedItemSubList ol,
+.legal-scope .numberedItemSubList ol li,
+.legal-scope .numberedItemSubList .numberedItem,
+.legal-scope .numberedItemSubList .numberedItemBody,
+.legal-scope .numberedItemSubList .numberedItemPrefix,
+.legal-scope .bulletListDisc,
+.legal-scope .bulletListDisc *,
+.legal-scope .bulletListCircle,
+.legal-scope .bulletListSquare,
+.legal-scope .bulletListCircle *,
+.legal-scope .bulletListSquare * {
+  font-size: 19.2px !important;
+  line-height: 1.5 !important;
 }
 
 /* ============ Table ============ */

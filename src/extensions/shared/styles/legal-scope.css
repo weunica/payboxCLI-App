@@ -128,12 +128,13 @@
      can reference the region. We visually collapse it using max-height + overflow. */
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.25s ease, opacity 0.2s ease;
+  transition: opacity 0.2s ease;
   opacity: 0;
 }
 
 .legal-scope .sectionContentWrapper.open {
-  max-height: 2000px; /* sufficiently large to fit expanded content */
+  max-height: none; /* allow height to be automatic based on content */
+  overflow: visible;
   opacity: 1;
 }
 
@@ -228,12 +229,13 @@
 .legal-scope .subSectionContentWrapper {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.25s ease, opacity 0.2s ease;
+  transition: opacity 0.2s ease;
   opacity: 0;
 }
 
 .legal-scope .subSectionContentWrapper.open {
-  max-height: 2000px;
+  max-height: none;
+  overflow: visible;
   opacity: 1;
 }
 

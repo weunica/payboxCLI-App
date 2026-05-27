@@ -94,20 +94,39 @@ export default function LegalSection({ section, isEditing, onChange, sectionInde
           setTimeout(() => {
             const targetEl = document.getElementById(anchorId);
             if (targetEl) {
-              const openEvent = new CustomEvent('openSubSection', { detail: { anchorId } });
-              document.dispatchEvent(openEvent);
+              // Build ancestor prefix ids to ensure every parent subsection opens in sequence.
+              // Example: subsection-1-3-1-17 -> [subsection-1, subsection-1-3, subsection-1-3-1, subsection-1-3-1-17]
+              const idPrefix = anchorId.replace(/^subsection-?/, '');
+              const parts = idPrefix.split(/[-.]/).filter(Boolean);
+              const prefixes = [];
+              for (let i = 0; i < parts.length; i++) {
+                prefixes.push(`subsection-${parts.slice(0, i + 1).join('-')}`);
+              }
+
+              const wrapperEl = sectionRef.current;
+              if (wrapperEl) wrapperEl.classList.add('scrolling');
+
+              // Dispatch open events for each prefix in order with small delay to allow nested components to respond
+              prefixes.forEach((id, idx) => {
+                setTimeout(() => {
+                  const openEvent = new CustomEvent('openSubSection', { detail: { anchorId: id } });
+                  document.dispatchEvent(openEvent);
+                }, idx * 80);
+              });
+
+              // After all opens dispatched, scroll to the final target
+              const totalDelay = prefixes.length * 80 + 120;
               setTimeout(() => {
-                const contentEl = document.getElementById(`${anchorId}-content`);
-                if (contentEl) {
-                  try {
-                    contentEl.setAttribute('tabindex', '-1');
-                    contentEl.focus();
-                  } catch (err) { }
-                  contentEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                } else {
-                  targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const innerTarget = document.getElementById(anchorId) || document.getElementById(`${anchorId}-title`) || document.getElementById(`${anchorId}-content`);
+                const scrollTarget = innerTarget || targetEl;
+                if (scrollTarget) {
+                  try { scrollTarget.setAttribute('tabindex', '-1'); scrollTarget.focus(); } catch (err) {}
+                  scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
-              }, 400);
+
+                // Re-enable pointer-events on controls after scroll finishes
+                setTimeout(() => { if (wrapperEl) wrapperEl.classList.remove('scrolling'); }, 700);
+              }, totalDelay);
             }
           }, 100);
         }

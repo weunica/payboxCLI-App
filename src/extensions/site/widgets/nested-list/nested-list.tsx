@@ -130,7 +130,8 @@ const NestedItem: FC<NestedItemProps> = ({ item, numbering, depth }) => {
   const blockChildren = children.filter(child => child.type && child.type !== 'item');
 
   return (
-    <li style={{ listStyle: 'none', padding: isRoot ? '10px 0' : '0' }}>
+    <li
+  role="listitem" style={{ listStyle: 'none', padding: isRoot ? '10px 0' : '0' }}>
       <div
         style={{
           display: 'flex',
@@ -139,7 +140,9 @@ const NestedItem: FC<NestedItemProps> = ({ item, numbering, depth }) => {
           padding: '3px 0',
         }}
       >
-        <span style={{
+        <span 
+        aria-hidden="true" 
+        style={{
           flexShrink: 0,
           fontSize: isRoot ? '22.5px' : '19.2px',
           fontWeight: 400,
@@ -186,7 +189,7 @@ const NestedItem: FC<NestedItemProps> = ({ item, numbering, depth }) => {
         </div>
       )}
       {children.length > 0 && (
-        <ol style={{ paddingRight: '24px', marginTop: isRoot ? '16px' : '2px' }}>
+        <ol  role="list" style={{ paddingRight: '24px', marginTop: isRoot ? '16px' : '2px' }}>
           {children.map((child) => {
             if (!child.type || child.type === 'item') {
               childCounter++;
@@ -253,7 +256,7 @@ const NestedListComponent: FC<WidgetProps> = ({ pageName }) => {
       WebkitFontSmoothing: 'antialiased',
       MozOsxFontSmoothing: 'grayscale',
     }}>
-      <ol style={{ padding: 0, margin: 0 }}>
+      <ol  role="list"  aria-label="תוכן הדף" style={{ padding: 0, margin: 0 }}>
         {listItems.map((item) => {
           if (!item.type || item.type === 'item') {
             rootCounter++;

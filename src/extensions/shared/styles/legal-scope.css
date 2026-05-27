@@ -147,6 +147,13 @@
   gap: 0.5rem;
 }
 
+/* While we are programmatically scrolling to an anchor, disable pointer-events
+   on absolute controls inside the section so they don't intercept clicks/scrolls */
+.legal-scope .sectionWrapper.scrolling .absolute,
+.legal-scope .sectionWrapper.scrolling .group-hover\/block\:opacity-100 {
+  pointer-events: none !important;
+}
+
 /* ============ SubSection ============ */
 .legal-scope .subSectionWrapper {
   margin-top: 0.5rem;

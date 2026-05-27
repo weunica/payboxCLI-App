@@ -48,9 +48,17 @@ export default function LegalSubSection({ subSection, isEditing, onChange, depth
 
     const handleOpenSubSection = (e) => {
       const anchorId = e.detail.anchorId;
-      
-      // Check if this subsection or any nested subsection matches
-      if (anchorId === subSectionId || anchorId.startsWith(subSectionId + '-')) {
+
+      // If the dispatched anchor is this subsection, a descendant, or the target is contained
+      // inside this subsection's wrapper, open it. This covers cases where IDs are normalized
+      // differently or the final anchor is nested deep within.
+      const targetEl = document.getElementById(anchorId);
+      const wrapperEl = document.getElementById(subSectionId);
+      if (
+        anchorId === subSectionId ||
+        anchorId.startsWith(subSectionId + '-') ||
+        (targetEl && wrapperEl && wrapperEl.contains(targetEl))
+      ) {
         setIsOpen(true);
         // focus the content region after opening so screen readers move to it
         setTimeout(() => {

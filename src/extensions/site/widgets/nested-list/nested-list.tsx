@@ -122,16 +122,10 @@ const NestedItem: FC<NestedItemProps> = ({ item, numbering, depth }) => {
   const isRoot = depth === 0;
   const children = item.children ?? [];
 
-  // compute per-child numbering, skipping non-item types
   let childCounter = 0;
-  // Filter only 'item' children for the list
-  const itemChildren = children.filter(child => !child.type || child.type === 'item');
-  // Non-item children (blocks)
-  const blockChildren = children.filter(child => child.type && child.type !== 'item');
 
   return (
-    <li
-  role="listitem" style={{ listStyle: 'none', padding: isRoot ? '10px 0' : '0' }}>
+    <li role="listitem" style={{ listStyle: 'none', padding: isRoot ? '10px 0' : '0' }}>
       <div
         style={{
           display: 'flex',
@@ -141,15 +135,16 @@ const NestedItem: FC<NestedItemProps> = ({ item, numbering, depth }) => {
         }}
       >
         <span 
-        aria-hidden="true" 
-        style={{
-          flexShrink: 0,
-          fontSize: isRoot ? '22.5px' : '19.2px',
-          fontWeight: 400,
-          color: '#272726',
-          lineHeight: '1.5',
-          fontFamily: "'Assistant', sans-serif",
-        }}>
+          aria-hidden="true" 
+          style={{
+            flexShrink: 0,
+            fontSize: isRoot ? '22.5px' : '19.2px',
+            fontWeight: 400,
+            color: '#272726',
+            lineHeight: '1.5',
+            fontFamily: "'Assistant', sans-serif",
+          }}
+        >
           {numbering}.
         </span>
         <span
@@ -161,17 +156,31 @@ const NestedItem: FC<NestedItemProps> = ({ item, numbering, depth }) => {
             fontFamily: "'Assistant', sans-serif",
           }}
         >
-          <Heading
-            depth={depth}
-            html={parseTitle(item.title)}
-            style={{
-              fontSize: isRoot ? '22.5px' : '19.2px',
-              fontWeight: isRoot ? 600 : 400,
-              color: '#272726',
-              lineHeight: '1.5',
-              fontFamily: "'Assistant', sans-serif",
-            }}
-          />
+          {depth === 0 ? (
+            <Heading
+              depth={0}
+              html={parseTitle(item.title)}
+              style={{
+                fontSize: '22.5px',
+                fontWeight: 600,
+                color: '#272726',
+                lineHeight: '1.5',
+                fontFamily: "'Assistant', sans-serif",
+              }}
+            />
+          ) : (
+            <p
+              style={{
+                margin: 0,
+                fontSize: '19.2px',
+                fontWeight: 400,
+                color: '#272726',
+                lineHeight: '1.5',
+                fontFamily: "'Assistant', sans-serif",
+              }}
+              dangerouslySetInnerHTML={{ __html: parseTitle(item.title) }}
+            />
+          )}
         </span>
       </div>
       {item.description && (
@@ -189,7 +198,7 @@ const NestedItem: FC<NestedItemProps> = ({ item, numbering, depth }) => {
         </div>
       )}
       {children.length > 0 && (
-        <ol  role="list" style={{ paddingRight: '24px', marginTop: isRoot ? '16px' : '2px' }}>
+        <ol role="list" style={{ paddingRight: '24px', marginTop: isRoot ? '16px' : '2px' }}>
           {children.map((child) => {
             if (!child.type || child.type === 'item') {
               childCounter++;
@@ -202,7 +211,12 @@ const NestedItem: FC<NestedItemProps> = ({ item, numbering, depth }) => {
                 />
               );
             }
-            return <BlockItem key={child.id} item={child} depth={depth + 1} />;
+            {/* תיקון: עטיפת הבלוק בתוך li לטובת נגישות ותקינות HTML */}
+            return (
+              <li key={child.id} role="listitem" style={{ listStyle: 'none' }}>
+                <BlockItem item={child} depth={depth + 1} />
+              </li>
+            );
           })}
         </ol>
       )}
@@ -256,7 +270,7 @@ const NestedListComponent: FC<WidgetProps> = ({ pageName }) => {
       WebkitFontSmoothing: 'antialiased',
       MozOsxFontSmoothing: 'grayscale',
     }}>
-      <ol  role="list"  aria-label="תוכן הדף" style={{ padding: 0, margin: 0 }}>
+      <ol role="list" aria-label="תוכן הדף" style={{ padding: 0, margin: 0 }}>
         {listItems.map((item) => {
           if (!item.type || item.type === 'item') {
             rootCounter++;
@@ -269,7 +283,12 @@ const NestedListComponent: FC<WidgetProps> = ({ pageName }) => {
               />
             );
           }
-          return <BlockItem key={item.id} item={item} depth={0} />;
+          {/* תיקון: עטיפת הבלוק בתוך li ברמת השורש לטובת תקינות ה-HTML */}
+          return (
+            <li key={item.id} role="listitem" style={{ listStyle: 'none' }}>
+              <BlockItem item={item} depth={0} />
+            </li>
+          );
         })}
       </ol>
     </div>

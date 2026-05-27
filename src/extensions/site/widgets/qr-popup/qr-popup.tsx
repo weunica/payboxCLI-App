@@ -47,9 +47,20 @@ class MyElement extends HTMLElement {
   connectedCallback() { this.render(); }
   attributeChangedCallback() { this.render(); }
 
+  // isMobileOrTablet() {
+  //   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+  //     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  // }
   isMobileOrTablet() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+    // בדיקה לפי גודל מסך
+    const isSmallScreen = window.innerWidth <= 1000;
+
+    // הבדיקה הקיימת שלך לפי סוג מכשיר
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    // החזרת אמת אם אחד מהתנאים מתקיים
+    return isSmallScreen || isMobileDevice;
   }
 
   handleButtonClick(e) {
@@ -69,34 +80,34 @@ class MyElement extends HTMLElement {
     }
   }
 
- openModal(clickURL) {
-  const modal = this.shadowRoot?.querySelector('.modal-overlay');
-  this._lastFocusedElement = this.shadowRoot.activeElement || document.activeElement; // שמירת האלמנט הנוכחי
+  openModal(clickURL) {
+    const modal = this.shadowRoot?.querySelector('.modal-overlay');
+    this._lastFocusedElement = this.shadowRoot.activeElement || document.activeElement; // שמירת האלמנט הנוכחי
 
-  if (modal) {
-    modal.style.display = 'flex';
-    setTimeout(() => {
-      modal.classList.add('active');
-      // מעבר פוקוס מיידי לכפתור הסגירה
-      const closeBtn = this.shadowRoot.getElementById('close-modal');
-      closeBtn?.focus();
-    }, 10);
-    this.generateQRCode(clickURL);
-  }
-}
-
-closeModal() {
-  const modal = this.shadowRoot?.querySelector('.modal-overlay');
-  modal?.classList.remove('active');
-  
-  setTimeout(() => { 
-    modal.style.display = 'none'; 
-    // החזרת הפוקוס לכפתור שפתח את המודאל
-    if (this._lastFocusedElement) {
-      this._lastFocusedElement.focus();
+    if (modal) {
+      modal.style.display = 'flex';
+      setTimeout(() => {
+        modal.classList.add('active');
+        // מעבר פוקוס מיידי לכפתור הסגירה
+        const closeBtn = this.shadowRoot.getElementById('close-modal');
+        closeBtn?.focus();
+      }, 10);
+      this.generateQRCode(clickURL);
     }
-  }, 300);
-}
+  }
+
+  closeModal() {
+    const modal = this.shadowRoot?.querySelector('.modal-overlay');
+    modal?.classList.remove('active');
+
+    setTimeout(() => {
+      modal.style.display = 'none';
+      // החזרת הפוקוס לכפתור שפתח את המודאל
+      if (this._lastFocusedElement) {
+        this._lastFocusedElement.focus();
+      }
+    }, 300);
+  }
 
   generateQRCode(clickURL) {
     const qrContainer = this.shadowRoot?.getElementById('qr-container');
@@ -111,133 +122,87 @@ closeModal() {
     const borderColor = this.getAttribute('btn-border-color') || 'transparent';
     const textColor = this.getAttribute('btn-text-color') || '#ffffff';
     const arrowIconColor = this.getAttribute('arrow-color') || textColor;
-    // Force arrow background always transparent
     const arrowBgColor = 'transparent';
     const showArrow = this.getAttribute('show-arrow') !== 'false';
     const ariaLabel = this.getAttribute('aria-label-text') || displayName;
 
+    // בדיקה דינמית לצורך נגישות
+    const isMobile = this.isMobileOrTablet();
+    const accessibilityAttrs = isMobile
+      ? 'role="link"'
+      : 'aria-haspopup="dialog"';
+
     this.shadowRoot.innerHTML = `
-    <style>
-      @font-face { font-family: 'Assistant'; font-style: normal; font-weight: 100 900; src: url('https://fonts.gstatic.com/s/assistant/v20/2sDcZGJYnIjSi6H75xkZZE1I0yCmYzzQtmZnEGOf.woff2') format('woff2'); unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F; }
-      @font-face { font-family: 'Assistant'; font-style: normal; font-weight: 100 900; src: url('https://fonts.gstatic.com/s/assistant/v20/2sDcZGJYnIjSi6H75xkZZE1I0yCmYzzQtmZnEA-f.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-      :host { display: flex; justify-content: flex-start; width: 100%; direction: rtl; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
-      @media (max-width: 1000px) { :host { justify-content: center; } }
+  <style>
+    /* ה-CSS שלך נשאר בדיוק אותו דבר */
+    @font-face { font-family: 'Assistant'; font-style: normal; font-weight: 100 900; src: url('https://fonts.gstatic.com/s/assistant/v20/2sDcZGJYnIjSi6H75xkZZE1I0yCmYzzQtmZnEGOf.woff2') format('woff2'); unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F; }
+    @font-face { font-family: 'Assistant'; font-style: normal; font-weight: 100 900; src: url('https://fonts.gstatic.com/s/assistant/v20/2sDcZGJYnIjSi6H75xkZZE1I0yCmYzzQtmZnEA-f.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+    :host { display: flex; justify-content: flex-start; width: 100%; direction: rtl; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
+    @media (max-width: 1000px) { :host { justify-content: center; } }
+    .cta-button { background-color: ${bgColor}; color: ${textColor}; border: 1.5px solid ${borderColor}; padding: 6px 20px; border-radius: 50px; cursor: pointer; font-family: 'Assistant', sans-serif; font-size: 18px; font-weight: bold; line-height: 18px; display: inline-flex; align-items: center; justify-content: flex-start; gap: 8px; transition: all 0.2s; direction: ltr; box-sizing: border-box; }
+    .arrow { display: ${showArrow ? 'inline-flex' : 'none'}; width: 24px; height: 24px; min-width:24px; background: ${arrowBgColor}; color: ${arrowIconColor}; border-radius: 999px; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; box-shadow: none; flex: 0 0 auto; }
+    .btn-text{ direction: rtl; color: ${textColor}; padding: 0; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 30, 60, 0.7); z-index: 10000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; padding: 40px 20px; box-sizing: border-box; }
+    .modal-overlay.active { display: flex; opacity: 1; }
+    .modal-content { background: white; padding: 40px; border-radius: 24px; position: relative; width: 665px; max-width: 100%; max-height: 90vh; direction: rtl; font-family: 'Assistant', sans-serif; overflow-y: auto; }
+    .close-btn { position: absolute; top: 20px; left: 20px; cursor: pointer; border: none; background: none; font-size: 24px; }
+    .flex-container { display: flex; align-items: center; gap: 40px; }
+    #qr-container { width: 243px; height: 243px; min-width: 243px; display: flex; align-items: center; justify-content: center; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    #qr-container img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+    h2 { margin: 0 0 10px 0; font-size: 32px; color: #272726; font-weight: 800; }
+    .sub-text { color: #272726; font-size: 24px; margin-bottom: 20px; font-weight: 600; }
+    .steps { list-style: none; padding: 0; margin: 0; }
+    .steps li { font-size: 24px; font-weight: 400; margin-bottom: 12px; display: flex; gap: 12px; align-items: center; color: #272726; }
+    .step-num { color: #009FF3; font-weight: 700; font-size: 36px; min-width: 30px; }
+  </style>
 
-      .cta-button {
-        background-color: ${bgColor};
-        color: ${textColor};
-        border: 1.5px solid ${borderColor};
-        padding: 6px 20px; border-radius: 50px;
-        cursor: pointer;
-        font-family: 'Assistant', sans-serif;
-        font-size: 18px; font-weight: bold;
-        line-height: 18px;
-        display: inline-flex; align-items: center; justify-content: flex-start;
-        gap: 8px; transition: all 0.2s; direction: ltr; /* arrow on left */
-        box-sizing: border-box;
-      }
+  <button class="cta-button" aria-label="${ariaLabel}" ${accessibilityAttrs}>
+    <span class="arrow" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <span class="btn-text">${displayName}</span>
+  </button>
 
-      /* circular chevron on the left (separate background) */
-      .arrow { display: ${showArrow ? 'inline-flex' : 'none'}; width: 24px; height: 24px; min-width:24px; 
-        background: ${arrowBgColor};
-        color: ${arrowIconColor}; border-radius: 999px; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;
-        box-shadow: none; flex: 0 0 auto;
-      }
-      .btn-text{ direction: rtl; color: ${textColor}; padding: 0; }
-      
-      .modal-overlay { 
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 30, 60, 0.7); z-index: 10000; justify-content: center; align-items: center;
-        opacity: 0; transition: opacity 0.3s;padding: 40px 20px; 
-        box-sizing: border-box;
-      }
-      .modal-overlay.active { display: flex; opacity: 1; }
-      .modal-content { 
-        background: white; padding: 40px; border-radius: 24px; position: relative; width: 665px; 
-        max-width: 100%;max-height: 90vh; direction: rtl; font-family: 'Assistant', sans-serif;overflow-y: auto;
-      }
-      .close-btn { position: absolute; top: 20px; left: 20px; cursor: pointer; border: none; background: none; font-size: 24px; }
-      .flex-container { display: flex; align-items: center; gap: 40px; }
-      #qr-container { 
-        width: 243px; 
-        height: 243px; 
-        min-width: 243px;
-        display: flex; 
-        align-items: center; 
-        justify-content: center;
-        background: white; /* רקע לבן מבטיח קריאות לסורק */
-        padding: 10px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      }
-      #qr-container img { 
-        width: 100%; 
-        height: 100%; 
-        object-fit: contain; 
-        image-rendering: pixelated;
-      }
-      h2 { margin: 0 0 10px 0; font-size: 32px; color: #272726; font-weight: 800; }
-      .sub-text { color: #272726; font-size: 24px; margin-bottom: 20px; font-weight: 600; }
-      .steps { list-style: none; padding: 0; margin: 0; }
-      .steps li { font-size: 24px; font-weight: 400; margin-bottom: 12px; display: flex; gap: 12px; align-items: center; color: #272726; }
-      .step-num { color: #009FF3; font-weight: 700; font-size: 36px; min-width: 30px; }
-    </style>
-
-    <button class="cta-button" aria-label="${ariaLabel}" aria-haspopup="dialog">
-      <span class="arrow" aria-hidden="true">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </span>
-      <span class="btn-text">${displayName}</span>
-    </button>
-
-    <div class="modal-overlay" 
-      role="dialog" 
-      aria-modal="true" 
-      aria-labelledby="modal-title-id">
-        <div class="modal-content">
-          <button class="close-btn" id="close-modal" aria-label="סגור חלון">✕</button>
-          <div class="flex-container">
-            <div class="text-side">
-              <h2 id="modal-title-id">${this.getAttribute('modal-title') || ''}</h2>
-              <h3 class="sub-text">${this.getAttribute('modal-subtitle') || ''}</h3>
-              <ul class="steps">
-                <li><span class="step-num">1</span> ${this.getAttribute('step-1') || ''}</li>
-                <li><span class="step-num">2</span> ${this.getAttribute('step-2') || ''}</li>
-                <li><span class="step-num">3</span> ${this.getAttribute('step-3') || ''}</li>
-              </ul>
-            </div>
-            <div id="qr-container"></div>
+  <div class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title-id">
+      <div class="modal-content">
+        <button class="close-btn" id="close-modal" aria-label="סגור חלון">✕</button>
+        <div class="flex-container">
+          <div class="text-side">
+            <h2 id="modal-title-id">${this.getAttribute('modal-title') || ''}</h2>
+            <h3 class="sub-text">${this.getAttribute('modal-subtitle') || ''}</h3>
+            <ul class="steps">
+              <li><span class="step-num">1</span> ${this.getAttribute('step-1') || ''}</li>
+              <li><span class="step-num">2</span> ${this.getAttribute('step-2') || ''}</li>
+              <li><span class="step-num">3</span> ${this.getAttribute('step-3') || ''}</li>
+            </ul>
           </div>
+          <div id="qr-container"></div>
         </div>
       </div>
-    `;
+    </div>
+  `;
 
-    // this.shadowRoot.querySelector('.cta-button').addEventListener('click', () => this.handleButtonClick());
-    // this.shadowRoot.querySelector('#close-modal')?.addEventListener('click', () => this.closeModal());
+    // מאזיני האירועים שלך נשארים כאן...
     const closeBtn = this.shadowRoot.querySelector('#close-modal');
-  const modalOverlay = this.shadowRoot.querySelector('.modal-overlay');
+    const modalOverlay = this.shadowRoot.querySelector('.modal-overlay');
 
-  // ניהול נעילת פוקוס (Focus Trap)
-  modalOverlay.addEventListener('keydown', (e) => {
-    if (e.key === 'Tab') {
-      // כיוון שבמודאל הזה יש כרגע רק אלמנט אחד לחיץ (ה-X),
-      // כל לחיצה על Tab או Shift+Tab פשוט תשאיר את הפוקוס עליו.
-      e.preventDefault();
-      closeBtn.focus();
-    }
-  });
+    modalOverlay.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        closeBtn.focus();
+      }
+    });
 
-  // סגירה ב-Escape (בונוס נגישות חשוב)
-  modalOverlay.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      this.closeModal();
-    }
-  });
+    modalOverlay.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.closeModal();
+      }
+    });
 
-  this.shadowRoot.querySelector('.cta-button').addEventListener('click', () => this.handleButtonClick());
-  closeBtn?.addEventListener('click', () => this.closeModal());
+    this.shadowRoot.querySelector('.cta-button').addEventListener('click', () => this.handleButtonClick());
+    closeBtn?.addEventListener('click', () => this.closeModal());
   }
 }
 export default MyElement;

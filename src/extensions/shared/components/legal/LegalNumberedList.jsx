@@ -21,7 +21,7 @@ const parseTextWithLinks = (text) => {
     if (url.startsWith('#')) {
       const raw = url.substring(1);
       const anchorId = normalizeAnchorId(raw);
-      return `<a href="#${anchorId}" class="text-blue-600 hover:text-blue-800 underline cursor-pointer" data-internal-link="${anchorId}">${linkText}</a>`;
+      return `<a href="#${anchorId}" class="text-blue-600 hover:text-blue-800 underline cursor-pointer" data-internal-link="${anchorId}" aria-describedby="${anchorId}-title">${linkText}</a>`;
     } else {
       return `<a href="${url}" target="_blank" rel="noopener noreferrer" aria-description="נפתח בכרטיסיה חדשה" class="text-blue-600 hover:text-blue-800 underline">${linkText}</a>`;
     }

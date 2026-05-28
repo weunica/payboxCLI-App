@@ -57,7 +57,7 @@ const parseTitle = (text: string): string => {
       if (url.startsWith('#')) {
         const raw = url.substring(1);
         const anchorId = normalizeAnchorId(raw);
-        return `<a href="#${anchorId}" target="${target}"${relAttr} style="color:inherit;text-decoration:underline;" data-internal-link="${anchorId}">${label}</a>`;
+        return `<a href="#${anchorId}" target="${target}"${relAttr} style="color:inherit;text-decoration:underline;" data-internal-link="${anchorId}" aria-describedby="${anchorId}-title">${label}</a>`;
       }
 
       const ariaDescAttr = target === '_blank' ? ' aria-description="נפתח בכרטיסיה חדשה"' : '';

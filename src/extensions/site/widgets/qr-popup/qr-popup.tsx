@@ -25,7 +25,6 @@ const initAppsFlyerEngine = () => {
     },
     displayQrCode: function (container, options) {
       if (container) {
-        // הוספת margin=1 עוזרת לסורקים לקרוא את הקוד טוב יותר
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${options.width}x${options.height}&data=${encodeURIComponent(options.text)}&margin=1`;
         container.innerHTML = `<img src="${qrUrl}" alt="QR Code" />`;
       }
@@ -153,7 +152,7 @@ class MyElement extends HTMLElement {
     .sub-text { color: #272726; font-size: 24px; margin-bottom: 20px; font-weight: 600; }
     .steps { list-style: none; padding: 0; margin: 0; }
     .steps li { font-size: 24px; font-weight: 400; margin-bottom: 12px; display: flex; gap: 12px; align-items: center; color: #272726; }
-    .step-num { color: #009FF3; font-weight: 700; font-size: 36px; min-width: 30px; }
+    .step-num { color: #005398; font-weight: 700; font-size: 36px; min-width: 30px; }
   </style>
 
   <button class="cta-button" aria-label="${ariaLabel}" ${accessibilityAttrs}>

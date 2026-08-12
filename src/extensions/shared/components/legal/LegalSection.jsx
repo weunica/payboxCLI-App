@@ -22,6 +22,24 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import LegalNumberedSubSections from "./LegalNumberedSubSections";
 
+const focusInternalTarget = (anchorId) => {
+  const candidates = [
+    document.getElementById(anchorId),
+    document.getElementById(`${anchorId}-content`),
+    document.getElementById(`${anchorId}-title`),
+  ].filter(Boolean);
+
+  const target = candidates[0];
+  if (!target) return;
+
+  if (!target.hasAttribute('tabindex')) {
+    target.setAttribute('tabindex', '-1');
+  }
+
+  target.focus({ preventScroll: true });
+  target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
 export default function LegalSection({ section, isEditing, onChange, sectionIndex, sectionNumber }) {
   const [isOpen, setIsOpen] = useState(false);
   const sectionRef = React.useRef(null);
@@ -117,12 +135,7 @@ export default function LegalSection({ section, isEditing, onChange, sectionInde
               // After all opens dispatched, scroll to the final target
               const totalDelay = prefixes.length * 80 + 120;
               setTimeout(() => {
-                const innerTarget = document.getElementById(anchorId) || document.getElementById(`${anchorId}-title`) || document.getElementById(`${anchorId}-content`);
-                const scrollTarget = innerTarget || targetEl;
-                if (scrollTarget) {
-                  try { scrollTarget.setAttribute('tabindex', '-1'); scrollTarget.focus(); } catch (err) {}
-                  scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
+                focusInternalTarget(anchorId);
 
                 // Re-enable pointer-events on controls after scroll finishes
                 setTimeout(() => { if (wrapperEl) wrapperEl.classList.remove('scrolling'); }, 700);
@@ -158,7 +171,7 @@ export default function LegalSection({ section, isEditing, onChange, sectionInde
         className="sectionButton"
         aria-expanded={isOpen}
         aria-controls={`${sectionId}-content`}
-        aria-label={`הרחבה-${stripFormatting(section.title)}`}
+        // aria-label={`הרחבה-${stripFormatting(section.title)}`}
       >
         <div className="sectionToggleGroup">
           <div className={isOpen ? "sectionCircle sectionCircleOpen" : "sectionCircle"}>

@@ -213,9 +213,9 @@ const NestedItem: FC<NestedItemProps> = ({ item, numbering, depth }) => {
             }
             {/* תיקון: עטיפת הבלוק בתוך li לטובת נגישות ותקינות HTML */}
             return (
-              <li key={child.id} role="listitem" style={{ listStyle: 'none' }}>
+              <div key={child.id} role="listitem" style={{ listStyle: 'none' }}>
                 <BlockItem item={child} depth={depth + 1} />
-              </li>
+              </div>
             );
           })}
         </ol>
@@ -285,9 +285,9 @@ const NestedListComponent: FC<WidgetProps> = ({ pageName }) => {
           }
           {/* תיקון: עטיפת הבלוק בתוך li ברמת השורש לטובת תקינות ה-HTML */}
           return (
-            <li key={item.id} role="listitem" style={{ listStyle: 'none' }}>
+            <div key={item.id} role="listitem" style={{ listStyle: 'none' }}>
               <BlockItem item={item} depth={0} />
-            </li>
+            </div>
           );
         })}
       </ol>

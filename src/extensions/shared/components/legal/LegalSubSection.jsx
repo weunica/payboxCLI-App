@@ -19,6 +19,21 @@ const stripFormatting = (text) => {
   return noHtml.replace(/\*\*|__|\*|`|_/g, "").replace(/\s+/g, " ").trim();
 };
 
+const focusInternalTarget = (anchorId) => {
+  const target = document.getElementById(anchorId)
+    || document.getElementById(`${anchorId}-content`)
+    || document.getElementById(`${anchorId}-title`);
+
+  if (!target) return;
+
+  if (!target.hasAttribute('tabindex')) {
+    target.setAttribute('tabindex', '-1');
+  }
+
+  target.focus({ preventScroll: true });
+  target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
 export default function LegalSubSection({ subSection, isEditing, onChange, depth = 0, numbering = "", parentNumbering = undefined, rootId ,parentTitle }) {
   const [isOpen, setIsOpen] = useState(false);
   const subSectionId = rootId ? rootId : numbering ? `subsection-${numbering.replace(/\./g, '-')}` : `subsection-${Date.now()}`;
@@ -38,9 +53,10 @@ export default function LegalSubSection({ subSection, isEditing, onChange, depth
             if (contentEl) {
               try {
                 contentEl.setAttribute('tabindex', '-1');
-                contentEl.focus();
+                contentEl.focus({ preventScroll: true });
               } catch (err) {}
             }
+            focusInternalTarget(subSectionId);
           }, 250);
         }
       }
@@ -54,22 +70,27 @@ export default function LegalSubSection({ subSection, isEditing, onChange, depth
       // differently or the final anchor is nested deep within.
       const targetEl = document.getElementById(anchorId);
       const wrapperEl = document.getElementById(subSectionId);
-      if (
-        anchorId === subSectionId ||
-        anchorId.startsWith(subSectionId + '-') ||
-        (targetEl && wrapperEl && wrapperEl.contains(targetEl))
-      ) {
+      const isExactMatch = anchorId === subSectionId;
+      const isDescendantMatch = !!subSectionId && anchorId.startsWith(subSectionId + '-');
+      const isContainedTarget = !!(targetEl && wrapperEl && wrapperEl.contains(targetEl));
+
+      if (isExactMatch || isDescendantMatch || isContainedTarget) {
         setIsOpen(true);
-        // focus the content region after opening so screen readers move to it
-        setTimeout(() => {
-          const contentEl = document.getElementById(`${subSectionId}-content`);
-          if (contentEl) {
-            try {
-              contentEl.setAttribute('tabindex', '-1');
-              contentEl.focus();
-            } catch (err) {}
-          }
-        }, 250);
+
+        // Only focus the exact subsection target. Ancestor prefixes (for example 1 -> 1-17)
+        // are only used to open intermediate sections, not to steal focus from the final target.
+        if (isExactMatch) {
+          setTimeout(() => {
+            const contentEl = document.getElementById(`${subSectionId}-content`);
+            if (contentEl) {
+              try {
+                contentEl.setAttribute('tabindex', '-1');
+                contentEl.focus({ preventScroll: true });
+              } catch (err) {}
+            }
+            focusInternalTarget(subSectionId);
+          }, 250);
+        }
       }
     };
 
@@ -159,7 +180,7 @@ export default function LegalSubSection({ subSection, isEditing, onChange, depth
         className="subSectionButton"
         aria-expanded={isOpen}
         aria-controls={`${subSectionId}-content`}
-        aria-label={`הרחבה - ${stripFormatting(parentTitle || '')}`}
+        // aria-label={`הרחבה - ${stripFormatting(parentTitle || '')}`}
       >
         <div className={isOpen ? "subSectionCircle subSectionCircleOpen" : "subSectionCircle"}>
           {isOpen ? (

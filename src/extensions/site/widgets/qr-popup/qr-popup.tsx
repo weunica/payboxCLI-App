@@ -137,7 +137,19 @@ class MyElement extends HTMLElement {
     @font-face { font-family: 'Assistant'; font-style: normal; font-weight: 100 900; src: url('https://fonts.gstatic.com/s/assistant/v20/2sDcZGJYnIjSi6H75xkZZE1I0yCmYzzQtmZnEGOf.woff2') format('woff2'); unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F; }
     @font-face { font-family: 'Assistant'; font-style: normal; font-weight: 100 900; src: url('https://fonts.gstatic.com/s/assistant/v20/2sDcZGJYnIjSi6H75xkZZE1I0yCmYzzQtmZnEA-f.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
     :host { display: flex; justify-content: flex-start; width: 100%; direction: rtl; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
-    @media (max-width: 1000px) { :host { justify-content: center; } }
+    @media (max-width: 1000px) { 
+      :host { justify-content: center; }
+      /* Make CTA centered on mobile */
+      .cta-button { justify-content: center; padding: 8px 18px; }
+      /* Stack modal content and center text like on web */
+      .modal-content { padding: 20px; width: 92%; max-width: 520px; }
+      .flex-container { flex-direction: column; align-items: center; gap: 20px; }
+      .text-side { text-align: center; }
+      h2 { font-size: 28px; }
+      .sub-text { font-size: 18px; }
+      .steps li { font-size: 18px; }
+      #qr-container { width: 220px; height: 220px; min-width: auto; }
+    }
     .cta-button { background-color: ${bgColor}; color: ${textColor}; border: 1.5px solid ${borderColor}; padding: 6px 20px; border-radius: 50px; cursor: pointer; font-family: 'Assistant', sans-serif; font-size: 18px; font-weight: bold; line-height: 18px; display: inline-flex; align-items: center; justify-content: flex-start; gap: 8px; transition: all 0.2s; direction: ltr; box-sizing: border-box; }
     .arrow { display: ${showArrow ? 'inline-flex' : 'none'}; width: 24px; height: 24px; min-width:24px; background: ${arrowBgColor}; color: ${arrowIconColor}; border-radius: 999px; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; box-shadow: none; flex: 0 0 auto; }
     .btn-text{ direction: rtl; color: ${textColor}; padding: 0; }

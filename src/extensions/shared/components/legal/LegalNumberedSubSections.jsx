@@ -19,6 +19,21 @@ const stripFormatting = (text) => {
   return noHtml.replace(/\*\*|__|\*|`|_/g, "").replace(/\s+/g, " ").trim();
 };
 
+const focusInternalTarget = (anchorId) => {
+  const target = document.getElementById(anchorId)
+    || document.getElementById(`${anchorId}-content`)
+    || document.getElementById(`${anchorId}-title`);
+
+  if (!target) return;
+
+  if (!target.hasAttribute('tabindex')) {
+    target.setAttribute('tabindex', '-1');
+  }
+
+  target.focus({ preventScroll: true });
+  target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
 function NumberedSubSectionItem({ item, isEditing, onChange, numbering, itemId }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -30,21 +45,43 @@ function NumberedSubSectionItem({ item, isEditing, onChange, numbering, itemId }
         if (anchorId === itemId) {
           e.preventDefault();
           setIsOpen(true);
+          // after opening, move programmatic focus into the content region for screen-reader users
           setTimeout(() => {
-            const element = document.getElementById(anchorId);
-            if (element) {
-              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const contentEl = document.getElementById(`${itemId}-content`);
+            if (contentEl) {
+              try {
+                contentEl.setAttribute('tabindex', '-1');
+                contentEl.focus({ preventScroll: true });
+              } catch (err) {}
             }
+            focusInternalTarget(itemId);
           }, 400);
         }
       }
     };
 
     const handleOpenSubSection = (e) => {
-      const targetEl = document.getElementById(e.detail.anchorId);
+      const anchorId = e.detail.anchorId;
+      const targetEl = document.getElementById(anchorId);
       const wrapperEl = document.getElementById(itemId);
-      if (e.detail.anchorId === itemId || (targetEl && wrapperEl && wrapperEl.contains(targetEl))) {
+      const isExactMatch = anchorId === itemId;
+      const isDescendantMatch = !!itemId && anchorId.startsWith(itemId + '-');
+      const isContainedTarget = !!(targetEl && wrapperEl && wrapperEl.contains(targetEl));
+
+      if (isExactMatch || isDescendantMatch || isContainedTarget) {
         setIsOpen(true);
+        if (isExactMatch) {
+          setTimeout(() => {
+            const contentEl = document.getElementById(`${itemId}-content`);
+            if (contentEl) {
+              try {
+                contentEl.setAttribute('tabindex', '-1');
+                contentEl.focus({ preventScroll: true });
+              } catch (err) {}
+            }
+            focusInternalTarget(itemId);
+          }, 400);
+        }
       }
     };
 
@@ -118,7 +155,7 @@ function NumberedSubSectionItem({ item, isEditing, onChange, numbering, itemId }
         className="subSectionButton"
         aria-expanded={isOpen}
         aria-controls={`${itemId}-content`}
-        aria-label={`הרחבה - ${stripFormatting(item.title || '')}`}
+        // aria-label={`הרחבה - ${stripFormatting(item.title || '')}`}
       >
         <div className="numberedItemToggleGroup">
           <div className={isOpen ? "subSectionCircle subSectionCircleOpen" : "subSectionCircle"}>
@@ -167,6 +204,8 @@ function NumberedSubSectionItem({ item, isEditing, onChange, numbering, itemId }
             transition={{ duration: 0.2 }}
             id={`${itemId}-content`}
             className={isOpen ? "subSectionContentWrapper open" : "subSectionContentWrapper"}
+            role="region"
+            tabIndex={-1}
           >
             <div className="subSectionContent">
               {(item.content || []).map((block, blockIdx) => (

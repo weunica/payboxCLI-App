@@ -55,8 +55,8 @@ export default function LegalContentBlock({ block, isEditing, onChange, parentNu
         const targetEl = document.getElementById(targetId);
         const linkText = (link.textContent || '').trim();
         const targetText = targetEl ? (targetEl.textContent || '').trim() : '';
-        const ariaLabel = targetText ? `${linkText} - ${targetText}` : linkText;
-        link.setAttribute('aria-label', ariaLabel);
+        // const ariaLabel = targetText ? `${linkText} - ${targetText}` : linkText;
+        // link.setAttribute('aria-label', ariaLabel);
       } catch (err) {
         // ignore
       }

@@ -121,6 +121,8 @@ interface NestedItemProps {
 const NestedItem: FC<NestedItemProps> = ({ item, numbering, depth }) => {
   const isRoot = depth === 0;
   const children = item.children ?? [];
+  const numberedChildren = children.filter((child) => !child.type || child.type === 'item');
+  const blockChildren = children.filter((child) => child.type === 'text-block' || child.type === 'heading-block');
 
   let childCounter = 0;
 
@@ -183,6 +185,7 @@ const NestedItem: FC<NestedItemProps> = ({ item, numbering, depth }) => {
           )}
         </span>
       </div>
+
       {item.description && (
         <div style={{ paddingRight: '8px', margin: '6px 0 4px' }}>
           <span
@@ -197,28 +200,31 @@ const NestedItem: FC<NestedItemProps> = ({ item, numbering, depth }) => {
           />
         </div>
       )}
-      {children.length > 0 && (
-        <ol role="list" style={{ paddingRight: '24px', marginTop: isRoot ? '16px' : '2px' }}>
-          {children.map((child) => {
-            if (!child.type || child.type === 'item') {
-              childCounter++;
-              return (
-                <NestedItem
-                  key={child.id}
-                  item={child}
-                  numbering={`${numbering}.${childCounter}`}
-                  depth={depth + 1}
-                />
-              );
-            }
-            {/* תיקון: עטיפת הבלוק בתוך li לטובת נגישות ותקינות HTML */}
+
+      {numberedChildren.length > 0 && (
+        <ol role="list" style={{ paddingRight: '24px', marginTop: isRoot ? '16px' : '2px', marginBottom: '8px' }}>
+          {numberedChildren.map((child) => {
+            childCounter++;
             return (
-              <div key={child.id} role="listitem" style={{ listStyle: 'none' }}>
-                <BlockItem item={child} depth={depth + 1} />
-              </div>
+              <NestedItem
+                key={child.id}
+                item={child}
+                numbering={`${numbering}.${childCounter}`}
+                depth={depth + 1}
+              />
             );
           })}
         </ol>
+      )}
+
+      {blockChildren.length > 0 && (
+        <div style={{ marginTop: '8px' }}>
+          {blockChildren.map((child) => (
+            <div key={child.id} style={{ padding: '8px 0' }}>
+              <BlockItem item={child} depth={depth + 1} />
+            </div>
+          ))}
+        </div>
       )}
     </li>
   );
@@ -261,6 +267,9 @@ const NestedListComponent: FC<WidgetProps> = ({ pageName }) => {
 
   let rootCounter = 0;
 
+  const rootItems = listItems.filter((item) => !item.type || item.type === 'item');
+  const standaloneBlocks = listItems.filter((item) => item.type === 'text-block' || item.type === 'heading-block');
+
   return (
     <div style={{
       fontFamily: "'Assistant', sans-serif",
@@ -270,24 +279,26 @@ const NestedListComponent: FC<WidgetProps> = ({ pageName }) => {
       WebkitFontSmoothing: 'antialiased',
       MozOsxFontSmoothing: 'grayscale',
     }}>
-      <ol role="list" aria-label="תוכן הדף" style={{ padding: 0, margin: 0 }}>
-        {listItems.map((item) => {
-          if (!item.type || item.type === 'item') {
-            rootCounter++;
-            return (
-              <NestedItem
-                key={item.id}
-                item={item}
-                numbering={`${rootCounter}`}
-                depth={0}
-              />
-            );
-          }
-          {/* תיקון: עטיפת הבלוק בתוך li ברמת השורש לטובת תקינות ה-HTML */}
-          return (
-            <div key={item.id} role="listitem" style={{ listStyle: 'none' }}>
+      {standaloneBlocks.length > 0 && (
+        <div style={{ marginBottom: '16px' }}>
+          {standaloneBlocks.map((item) => (
+            <div key={item.id} style={{ padding: '8px 0' }}>
               <BlockItem item={item} depth={0} />
             </div>
+          ))}
+        </div>
+      )}
+
+      <ol role="list" aria-label="תוכן הדף" style={{ padding: 0, margin: 0 }}>
+        {rootItems.map((item) => {
+          rootCounter++;
+          return (
+            <NestedItem
+              key={item.id}
+              item={item}
+              numbering={`${rootCounter}`}
+              depth={0}
+            />
           );
         })}
       </ol>
